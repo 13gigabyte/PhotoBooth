@@ -42,6 +42,8 @@
   --pg:#cfd1de; --pg-on:#4c8dff;
   color-scheme:dark --solid:#27282d;}
 [hidden]{display:none!important}
+.updbar{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 112px);transform:translateX(-50%);z-index:250;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:22px;background:rgba(32,33,38,.92);color:#fff;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.updbar button{border:0;border-radius:16px;height:30px;padding:0 14px;background:#2f6df6;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
 .splash{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;box-sizing:border-box;background:#e8e7ec;color:#1d1d22;font-family:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;text-align:center;-webkit-user-select:none;user-select:none;transition:opacity .3s ease}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .splash{background:#27282d;color:#f2f2f5}}
 :root[data-theme="dark"] .splash{background:#27282d;color:#f2f2f5}
@@ -322,6 +324,11 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .about-in h2 small{font-size:.5em;font-weight:500;opacity:.65;margin-left:2px}
 .about-in .by{font-size:12px;opacity:.6}
 .about-in button{margin-top:14px;border:0;border-radius:18px;height:36px;padding:0 30px;font-size:15px;font-weight:600;color:#fff;background:#f0301f;cursor:pointer}
+.about-in button.upd{margin-top:14px;height:34px;padding:0 20px;font-size:14px;background:rgba(127,127,140,.28);color:inherit}
+.about-in button.upd.go{background:#2f6df6;color:#fff}
+.about-in button.upd:disabled{opacity:.6;cursor:default}
+.about-in .updst{font-size:12px;opacity:.7;margin-top:8px;min-height:15px}
+.about-in .updst+button{margin-top:10px}
 
 .countbar.manual{cursor:pointer}
 .srow.off{opacity:.38;pointer-events:none}
@@ -362,10 +369,10 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 <body>
 
 <div class="splash" id="splash" role="status" aria-live="polite"><img id="splashImg" alt="" width="96" height="96"><h2>Opening PhotoBooth</h2><p>Please wait...</p><div class="ios-spin" aria-hidden="true"><i style="transform:rotate(0deg);animation-delay:-1.000s"></i><i style="transform:rotate(30deg);animation-delay:-0.917s"></i><i style="transform:rotate(60deg);animation-delay:-0.833s"></i><i style="transform:rotate(90deg);animation-delay:-0.750s"></i><i style="transform:rotate(120deg);animation-delay:-0.667s"></i><i style="transform:rotate(150deg);animation-delay:-0.583s"></i><i style="transform:rotate(180deg);animation-delay:-0.500s"></i><i style="transform:rotate(210deg);animation-delay:-0.417s"></i><i style="transform:rotate(240deg);animation-delay:-0.333s"></i><i style="transform:rotate(270deg);animation-delay:-0.250s"></i><i style="transform:rotate(300deg);animation-delay:-0.167s"></i><i style="transform:rotate(330deg);animation-delay:-0.083s"></i></div></div>
-<script>try{var _i=document.querySelector("link[rel=icon]");document.getElementById("splashImg").src=_i?_i.href:"icon-192.png"}catch(e){}</script>
+<script>try{var _i=document.querySelector("link[rel=icon]"),_s=document.getElementById("splashImg");_s.onerror=function(){_s.onerror=null;if(_i)_s.src=_i.href};_s.src="icon-512.png"}catch(e){}</script>
 <div class="install" id="install" hidden role="dialog" aria-modal="true" aria-labelledby="instT">
   <div class="install-in">
-    <img src="icon-192.png" alt="" width="104" height="104">
+    <img src="icon-512.png" alt="" width="104" height="104">
     <h1 id="instT">PhotoBooth</h1>
     <p id="instP">Install PhotoBooth to start taking photos and videos</p>
     <button type="button" id="instBtn" hidden>Install app</button>
@@ -422,7 +429,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <button class="pvnav r" id="pvnext" type="button" aria-label="Next photo" hidden><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="pvcount" id="pvcount" hidden aria-live="polite"></div>
     <button class="pvchk" id="pvchk" type="button" aria-pressed="false" aria-label="Select this photo" hidden><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v71</small></h2><div class="by">@13gigabyte</div><button type="button" id="aboutDone">Done</button></div></div>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v75</small></h2><div class="by">@13gigabyte</div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -1209,11 +1216,16 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       if(fsw){flashEl.classList.remove('hold');void flashEl.offsetWidth;flashEl.classList.add('out')}
       else if(swap&&sRect){if(snapEl){try{snapEl.remove()}catch(e){}snapEl=null}tailBlink(sRect)}
     }else{
-      if(playSfx(begBuf)){await wait(560);if(state!=='idle'){busy=false;return}}
+      if(playSfx(begBuf)){
+        recPending=true;setState('rec');$('#timer').textContent='00:00:00';
+        await wait(560);
+        if(!recPending)return;
+        recPending=false;
+      }
       startRec();
     }
   }
-  var rec=null,chunks=[],t0=0,tick=0;
+  var recPending=false,rec=null,chunks=[],t0=0,tick=0;
   function startRec(){
     chunks=[];rec=null;
     try{
@@ -1229,6 +1241,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     tick=setInterval(function(){var s=Math.floor((performance.now()-t0)/1000);tm.textContent=[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(function(n){return String(n).padStart(2,'0')}).join(':')},200);
   }
   function stopRec(){
+    if(recPending){recPending=false;busy=false;setState('idle');return}
     clearInterval(tick);
     var dur=(performance.now()-t0)/1000,c=grab(),thumb=thumbOf(c),poster=c.toDataURL('image/jpeg',.9);
     var finish=function(url,blob){addItem({type:'video',thumb:thumb,full:poster,url:url,blob:blob||null,dur:dur})};
@@ -1457,7 +1470,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   Object.keys(RNG).forEach(function(k){RNG[k][0].addEventListener('input',function(){var v=+RNG[k][0].value;settings[k]=k==='zoom'?v/100:v;RNG[k][1].textContent=RNG[k][2](settings[k]);saveSettings()})});
   $('#adjreset').addEventListener('click',function(){settings.zoom=1;settings.br=0;settings.co=100;settings.sa=100;saveSettings();renderSettings()});
   [].forEach.call($('#arseg').children,function(b){b.addEventListener('click',function(){settings.ar=b.dataset.ar;saveSettings();renderSettings()})});
-  var aboutEl=$('#about');document.body.appendChild(aboutEl);var ai=document.querySelector('link[rel=icon]');$('#aboutImg').src=ai?ai.href:'icon-192.png';
+  var aboutEl=$('#about');document.body.appendChild(aboutEl);var ai=document.querySelector('link[rel=icon]');var abi=$('#aboutImg');abi.onerror=function(){abi.onerror=null;if(ai)abi.src=ai.href};abi.src='icon-512.png';
   $('#aboutrow').addEventListener('click',function(){closeSettings();aboutEl.hidden=false;$('#aboutDone').focus()});
   $('#aboutDone').addEventListener('click',function(){aboutEl.hidden=true});
   aboutEl.addEventListener('pointerdown',function(e){if(e.target===aboutEl)aboutEl.hidden=true});
@@ -1787,12 +1800,59 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       if(ready||t>15000){clearInterval(iv);hideSplash()}
     },100);
   })();
+  /* ---------- self-updating: look for a new version on launch, on focus and every 30 min ---------- */
+  function setupUpdates(){
+    try{
+      var had=!!navigator.serviceWorker.controller,reloading=false;
+      var bar=document.createElement('div');bar.className='updbar';bar.hidden=true;
+      bar.innerHTML='<span>A new version is ready</span><button type="button">Reload</button>';
+      document.body.appendChild(bar);
+      bar.querySelector('button').addEventListener('click',function(){reloading=true;location.reload()});
+      var upBtn=$('#aboutUpd'),upSt=$('#aboutSt'),updReady=false,manual=false,ubusy=false,reg0=null;
+      function upUI(k){
+        var L={idle:'Check for Update',checking:'Checking…',downloading:'Downloading update…',ready:'Refresh to update',uptodate:'Check for Update',error:'Check for Update'};
+        var M={ready:'A new version is available',uptodate:'You\u2019re up to date',error:'Couldn\u2019t check for updates'};
+        upBtn.textContent=L[k]||L.idle;upBtn.disabled=(k==='checking'||k==='downloading');upBtn.classList.toggle('go',k==='ready');
+        upSt.textContent=M[k]||'';
+      }
+      navigator.serviceWorker.addEventListener('controllerchange',function(){
+        if(!had){had=true;return}            /* first install: nothing to update */
+        if(reloading)return;
+        updReady=true;ubusy=false;upUI('ready');
+        if(manual||!aboutEl.hidden){bar.hidden=true;return}   /* they are looking at About: let them tap the button */
+        /* nothing captured and not busy: update silently; otherwise ask so no photos are lost */
+        if(!items.length&&!busy&&state==='idle'){reloading=true;location.reload()}
+        else bar.hidden=false;
+      });
+      upBtn.addEventListener('click',function(){
+        if(updReady){reloading=true;location.reload();return}
+        if(!reg0||ubusy)return;ubusy=true;manual=true;upUI('checking');
+        var fin=function(k){manual=false;ubusy=false;upUI(k)};
+        reg0.update().then(function(){
+          setTimeout(function(){
+            if(updReady)return;
+            if(reg0.installing||reg0.waiting){upUI('downloading');setTimeout(function(){if(!updReady)fin('uptodate')},15000)}
+            else fin('uptodate');
+          },700);
+        }).catch(function(){fin('error')});
+      });
+      if(window.MutationObserver)new MutationObserver(function(){if(!aboutEl.hidden&&!updReady&&!ubusy)upUI('idle')}).observe(aboutEl,{attributes:true,attributeFilter:['hidden']});
+      navigator.serviceWorker.register('sw.js').then(function(reg){
+        reg0=reg;upBtn.hidden=false;upSt.hidden=false;
+        reg.addEventListener('updatefound',function(){if(manual)upUI('downloading')});
+        var chk=function(){try{reg.update().catch(function(){})}catch(e){}};
+        document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});
+        window.addEventListener('online',chk);
+        setInterval(chk,30*60*1000);chk();
+      }).catch(function(){});
+    }catch(e){}
+  }
   /* ---------- install gate (only enforced in the hosted web-app build) ---------- */
   (function(){
     var ENFORCE_INSTALL=true;
     var h=location.hostname,standalone=['standalone','fullscreen','minimal-ui','window-controls-overlay'].some(function(m){try{return matchMedia('(display-mode: '+m+')').matches}catch(e){return false}})||navigator.standalone===true;
     var gated=ENFORCE_INSTALL&&/^https?:$/.test(location.protocol)&&h!=='localhost'&&h!=='127.0.0.1'&&!standalone;
-    if(ENFORCE_INSTALL&&'serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){try{navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}}
+    if(ENFORCE_INSTALL&&'serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){setupUpdates()}
     if(!gated){requestCamera();return}
     hideSplash();
     var box=$('#install'),btn=$('#instBtn'),help=$('#instHelp'),pp=$('#instP'),dp=null;
