@@ -430,7 +430,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <button class="pvnav r" id="pvnext" type="button" aria-label="Next photo" hidden><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="pvcount" id="pvcount" hidden aria-live="polite"></div>
     <button class="pvchk" id="pvchk" type="button" aria-pressed="false" aria-label="Select this photo" hidden><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v75</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v77</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -469,7 +469,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       <div class="srow"><span class="lbl" id="mirlbl">Mirror preview</span><button class="switch" id="mirsw" type="button" role="switch" aria-checked="true" aria-labelledby="mirlbl"></button></div>
       <div class="srow"><span class="lbl" id="sndlbl">Shutter sound</span><button class="switch" id="sndsw" type="button" role="switch" aria-checked="true" aria-labelledby="sndlbl"></button></div>
       <div class="sdiv"></div>
-      <div class="srow col2"><span class="lbl">Zoom<span class="hint val" id="zoomv">1.0×</span></span><input class="rng" id="zoomr" type="range" min="100" max="300" step="5" value="100" aria-label="Zoom"></div>
+      <div class="srow col2"><span class="lbl">Zoom<span class="hint val" id="zoomv">1.0×</span></span><input class="rng" id="zoomr" type="range" min="100" max="400" step="5" value="100" aria-label="Zoom"></div>
       <div class="srow col2"><span class="lbl">Brightness<span class="hint val" id="brv">0</span></span><input class="rng" id="brr" type="range" min="-100" max="100" step="1" value="0" aria-label="Brightness"></div>
       <div class="srow col2"><span class="lbl">Contrast<span class="hint val" id="cov">100%</span></span><input class="rng" id="cor" type="range" min="50" max="150" step="1" value="100" aria-label="Contrast"></div>
       <div class="srow col2"><span class="lbl">Saturation<span class="hint val" id="sav">100%</span></span><input class="rng" id="sar" type="range" min="0" max="200" step="1" value="100" aria-label="Saturation"></div>
@@ -952,7 +952,58 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   /* ---------- render loop ---------- */
   function adjOn(){return settings.br!==0||settings.co!==100||settings.sa!==100}
   function adjVals(){return [settings.br/100*0.4,settings.co/100,settings.sa/100]}
-  function zrect(x,y,w,h){var z=settings.zoom;if(z<=1.001)return [x,y,w,h];var nw=w/z,nh=h/z;return [x+(w-nw)/2,y+(h-nh)/2,nw,nh]}
+  var zcx=.5,zcy=.5,ZMAX=4;
+  function zcl(v,a,b){return v<a?a:v>b?b:v}
+  /* visible window = cover-fitted rect, then shrunk by zoom around (zcx,zcy) (fractions of the cover rect, un-mirrored) */
+  function zrect(x,y,w,h){
+    var z=settings.zoom,tr=W/H,cw=w,ch=h,sx=x,sy=y;
+    if(w/h>tr){cw=h*tr;sx=x+(w-cw)/2}else{ch=w/tr;sy=y+(h-ch)/2}
+    if(z<=1.001)return [sx,sy,cw,ch];
+    var cx=zcl(zcx,.5/z,1-.5/z),cy=zcl(zcy,.5/z,1-.5/z);
+    return [sx+(cx-.5/z)*cw,sy+(cy-.5/z)*ch,cw/z,ch/z];
+  }
+  /* ---------- pinch to zoom at a point (trackpad pinch, touch pinch, Safari gestures) ---------- */
+  var pz={u:null,z0:1,touch:false,saveT:0};
+  function pzOK(){return source!=='none'&&(state==='idle'||state==='count'||state==='manual'||state==='rec')}
+  function pzFrac(cx,cy){var r=view.getBoundingClientRect();return [zcl((cx-r.left)/(r.width||1),0,1),zcl((cy-r.top)/(r.height||1),0,1)]}
+  function pzStart(cx,cy){
+    var f=pzFrac(cx,cy),z=settings.zoom,px=settings.mirror?1-f[0]:f[0];
+    var ccx=zcl(zcx,.5/z,1-.5/z),ccy=zcl(zcy,.5/z,1-.5/z);
+    pz.z0=z;pz.u=[ccx-.5/z+px/z,ccy-.5/z+f[1]/z];
+  }
+  function pzApply(z2,cx,cy){
+    if(!pz.u)return;z2=zcl(z2,1,ZMAX);var f=pzFrac(cx,cy),px=settings.mirror?1-f[0]:f[0];
+    settings.zoom=Math.round(z2*1000)/1000;
+    if(z2<=1.001){zcx=zcy=.5}else{zcx=zcl(pz.u[0]-px/z2+.5/z2,.5/z2,1-.5/z2);zcy=zcl(pz.u[1]-f[1]/z2+.5/z2,.5/z2,1-.5/z2)}
+    var zr=$('#zoomr'),zv=$('#zoomv');if(zr)zr.value=String(Math.round(settings.zoom*100));if(zv)zv.textContent=settings.zoom.toFixed(1)+'\u00d7';
+    clearTimeout(pz.saveT);pz.saveT=setTimeout(function(){try{saveSettings()}catch(e){}},400);
+  }
+  vp.addEventListener('wheel',function(e){
+    if(!pzOK())return;
+    if(!e.ctrlKey){   /* two-finger trackpad scroll while zoomed in = pan */
+      var z=settings.zoom;if(z<=1.001)return;e.preventDefault();
+      var r=view.getBoundingClientRect(),k=e.deltaMode===1?16:1,dx=e.deltaX*k/(r.width||1)/z,dy=e.deltaY*k/(r.height||1)/z;
+      zcx=zcl(zcl(zcx,.5/z,1-.5/z)+(settings.mirror?-dx:dx),.5/z,1-.5/z);zcy=zcl(zcl(zcy,.5/z,1-.5/z)+dy,.5/z,1-.5/z);return;
+    }
+    e.preventDefault();
+    var d=e.deltaMode===1?e.deltaY*16:e.deltaY;d=zcl(d,-30,30);
+    pzStart(e.clientX,e.clientY);pzApply(settings.zoom*Math.exp(-d*.012),e.clientX,e.clientY);
+  },{passive:false});
+  function tpd(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1}
+  function tpm(t){return [(t[0].clientX+t[1].clientX)/2,(t[0].clientY+t[1].clientY)/2]}
+  var pd0=1;
+  vp.addEventListener('touchstart',function(e){
+    if(e.touches.length===2&&pzOK()){pz.touch=true;var m=tpm(e.touches);pd0=tpd(e.touches);pzStart(m[0],m[1])}
+  },{passive:true});
+  vp.addEventListener('touchmove',function(e){
+    if(!pz.touch||e.touches.length!==2)return;e.preventDefault();
+    var m=tpm(e.touches);pzApply(pz.z0*tpd(e.touches)/pd0,m[0],m[1]);
+  },{passive:false});
+  function tend(e){if(e.touches.length<2){pz.touch=false}}
+  vp.addEventListener('touchend',tend);vp.addEventListener('touchcancel',tend);
+  vp.addEventListener('gesturestart',function(e){if(pz.touch||!pzOK())return;e.preventDefault();pzStart(e.clientX,e.clientY)});
+  vp.addEventListener('gesturechange',function(e){if(pz.touch||!pzOK())return;e.preventDefault();pzApply(pz.z0*e.scale,e.clientX,e.clientY)});
+  vp.addEventListener('gestureend',function(e){if(!pz.touch)e.preventDefault()});
   var qprev=$('#qprev'),qpT=0;
   function updateQPrev(){
     if(qMenu.hidden)return;var n=performance.now();if(n-qpT<90)return;qpT=n;
