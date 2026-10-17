@@ -435,8 +435,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <div class="pvcount" id="pvcount" hidden aria-live="polite"></div>
     <button class="pvchk" id="pvchk" type="button" aria-pressed="false" aria-label="Select this photo" hidden><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="about" id="updpop" hidden role="dialog" aria-modal="true" aria-labelledby="upT"><div class="about-in upd-in"><img id="upImg" alt="" width="84" height="84"><div class="upk">A new update available</div><h2 id="upT">PhotoBooth <small id="upV"></small></h2><div class="uplog" id="upLog" hidden></div><button type="button" id="upGo" class="upd">Refresh to update</button><button type="button" id="upLater">Later</button></div></div>
-    <script type="application/json" id="changelog">{"notes":["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)","Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}</script>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v79</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <script type="application/json" id="changelog">{"notes":["Fixed the camera randomly zooming in when the room is dark"]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v80</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -935,20 +935,28 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   /* some cameras deliver frames with black bars baked in; find and trim them */
   var crop={x:0,y:0,w:0,h:0,at:-9999},cc=document.createElement('canvas'),cctx=cc.getContext('2d',{willReadFrequently:true});
   cc.width=64;cc.height=36;
+  var cropCand='',cropSeen=0;
   function updateCrop(){
     crop.at=performance.now();
     var vw=video.videoWidth,vh=video.videoHeight;if(!vw||!vh)return;
     try{
       cctx.drawImage(video,0,0,64,36);var d=cctx.getImageData(0,0,64,36).data;
-      var lit=function(x,y){var i=(y*64+x)*4;return Math.max(d[i],d[i+1],d[i+2])>16};
+      /* a dark room is NOT a black bar: only trim when the picture itself is clearly lit, the bars are pure black,
+         the trim is small, and the same result shows up twice in a row */
+      var sum=0,n=0;for(var yy=8;yy<28;yy++)for(var xx=14;xx<50;xx++){var q=(yy*64+xx)*4;sum+=Math.max(d[q],d[q+1],d[q+2]);n++}
+      if(sum/n<45)return;                         /* dim scene: keep whatever we had */
+      var lit=function(x,y){var i=(y*64+x)*4;return Math.max(d[i],d[i+1],d[i+2])>7};
       var col=function(x){for(var y=0;y<36;y++)if(lit(x,y))return true;return false};
       var row=function(y){for(var x=0;x<64;x++)if(lit(x,y))return true;return false};
       var l=0,r=63,t=0,b=35;
-      while(l<24&&!col(l))l++;while(r>39&&!col(r))r--;while(t<12&&!row(t))t++;while(b>23&&!row(b))b--;
-      if(l<2)l=0;else l=Math.min(l+1,24);
-      if(r>61)r=63;else r=Math.max(r-1,39);
-      if(t<2)t=0;else t=Math.min(t+1,12);
-      if(b>33)b=35;else b=Math.max(b-1,23);
+      while(l<10&&!col(l))l++;while(r>53&&!col(r))r--;while(t<6&&!row(t))t++;while(b>29&&!row(b))b--;
+      if(l<2)l=0;else l=Math.min(l+1,10);
+      if(r>61)r=63;else r=Math.max(r-1,53);
+      if(t<2)t=0;else t=Math.min(t+1,6);
+      if(b>33)b=35;else b=Math.max(b-1,29);
+      var key=l+','+r+','+t+','+b;
+      if(key!==cropCand){cropCand=key;cropSeen=1;return}
+      if(++cropSeen<2)return;
       crop.x=l/64*vw;crop.y=t/36*vh;crop.w=(r-l+1)/64*vw;crop.h=(b-t+1)/36*vh;
     }catch(e){crop.w=0}
   }
