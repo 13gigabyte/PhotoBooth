@@ -328,8 +328,12 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .about-in button.upd.go{background:#f0301f;color:#fff}
 .about-in button.upd:disabled{opacity:.6;cursor:default}
 .about-in .updst{font-size:12px;opacity:.7;margin-top:12px;min-height:15px}
-.about-in #aboutDone{width:100%;margin-top:8px;background:rgba(127,127,140,.28);color:inherit}
+.about-in #aboutDone,.about-in #upLater{width:100%;margin-top:8px;background:rgba(127,127,140,.28);color:inherit}
 .about-in button.upd[hidden]+#aboutDone{margin-top:14px}
+.upd-in{width:300px}
+.upd-in .upk{font-size:12.5px;opacity:.75;margin-top:2px}
+.upd-in .uplog{align-self:stretch;text-align:left;font-size:13px;line-height:1.35;max-height:170px;overflow:auto;margin:8px 0 6px;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.16)}
+.upd-in .uplog ul{margin:0;padding-left:16px}.upd-in .uplog li{margin:2px 0}
 
 .countbar.manual{cursor:pointer}
 .srow.off{opacity:.38;pointer-events:none}
@@ -430,7 +434,9 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <button class="pvnav r" id="pvnext" type="button" aria-label="Next photo" hidden><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="pvcount" id="pvcount" hidden aria-live="polite"></div>
     <button class="pvchk" id="pvchk" type="button" aria-pressed="false" aria-label="Select this photo" hidden><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v77</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <div class="about" id="updpop" hidden role="dialog" aria-modal="true" aria-labelledby="upT"><div class="about-in upd-in"><img id="upImg" alt="" width="84" height="84"><div class="upk">A new update available</div><h2 id="upT">PhotoBooth <small id="upV"></small></h2><div class="uplog" id="upLog" hidden></div><button type="button" id="upGo" class="upd">Refresh to update</button><button type="button" id="upLater">Later</button></div></div>
+    <script type="application/json" id="changelog">{"notes":["Pinch to zoom in and out at any spot on the camera preview (trackpad or touch), works with every effect","Two-finger scroll pans around while zoomed in","New Check for Update button in About","Updates are now checked quietly in the background after the app loads, with release notes shown here"]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v78</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -1856,10 +1862,33 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   function setupUpdates(){
     try{
       var had=!!navigator.serviceWorker.controller,reloading=false;
-      var bar=document.createElement('div');bar.className='updbar';bar.hidden=true;
-      bar.innerHTML='<span>A new version is ready</span><button type="button">Reload</button>';
-      document.body.appendChild(bar);
-      bar.querySelector('button').addEventListener('click',function(){reloading=true;location.reload()});
+      var armed=false,popShown=false,popEl=$('#updpop');document.body.appendChild(popEl);
+      var upImg=$('#upImg');upImg.onerror=function(){upImg.onerror=null;var l=document.querySelector('link[rel=icon]');if(l)upImg.src=l.href};upImg.src='icon-512.png';
+      /* the new version is already in the cache by now: read its number and release notes from it */
+      function newInfo(){
+        /* an old cache may still exist for a moment: read every copy and keep the newest */
+        return caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.open(k).then(function(c){return c.match('./index.html')}).then(function(r){return r?r.text():''}).catch(function(){return ''})}))}).then(function(ts){
+          var best=null,bn=-1;
+          ts.forEach(function(t){var v=(t.match(/id="aboutT">PhotoBooth <small>([^<]+)</)||[])[1]||'',n=parseInt(v.replace(/\D/g,''),10)||0;if(t&&n>bn){bn=n;best={t:t,v:v}}});
+          var notes=[];
+          try{var m=best&&best.t.match(new RegExp('id="change'+'log"[^>]*>([\\s\\S]*?)<'+'/script>'));if(m)notes=JSON.parse(m[1]).notes||[]}catch(e){}
+          return {v:best?best.v:'',notes:notes};
+        }).catch(function(){return {v:'',notes:[]}});
+      }
+      function showPop(){
+        if(!armed||popShown||!updReady||reloading)return;
+        if(state!=='idle'||!aboutEl.hidden||busy){setTimeout(showPop,2000);return}   /* never interrupt a countdown, recording or About */
+        popShown=true;
+        newInfo().then(function(i){
+          $('#upV').textContent=i.v;var lg=$('#upLog');lg.innerHTML='';
+          if(i.notes.length){var ul=document.createElement('ul');i.notes.forEach(function(n){var li=document.createElement('li');li.textContent=n;ul.appendChild(li)});lg.appendChild(ul);lg.hidden=false}else lg.hidden=true;
+          popEl.hidden=false;$('#upGo').focus();
+        });
+      }
+      $('#upGo').addEventListener('click',function(){reloading=true;location.reload()});
+      $('#upLater').addEventListener('click',function(){popEl.hidden=true});
+      popEl.addEventListener('pointerdown',function(e){if(e.target===popEl)popEl.hidden=true});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!popEl.hidden)popEl.hidden=true});
       var upBtn=$('#aboutUpd'),upSt=$('#aboutSt'),updReady=false,manual=false,ubusy=false,reg0=null;
       function upUI(k){
         var L={idle:'Check for Update',checking:'Checking…',downloading:'Downloading update…',ready:'Refresh to update',uptodate:'Check for Update',error:'Check for Update'};
@@ -1871,10 +1900,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         if(!had){had=true;return}            /* first install: nothing to update */
         if(reloading)return;
         updReady=true;ubusy=false;upUI('ready');
-        if(manual||!aboutEl.hidden){bar.hidden=true;return}   /* they are looking at About: let them tap the button */
-        /* nothing captured and not busy: update silently; otherwise ask so no photos are lost */
-        if(!items.length&&!busy&&state==='idle'){reloading=true;location.reload()}
-        else bar.hidden=false;
+        if(manual||!aboutEl.hidden)return;   /* they are looking at About: let them tap the button */
+        showPop();
       });
       upBtn.addEventListener('click',function(){
         if(updReady){reloading=true;location.reload();return}
@@ -1889,14 +1916,19 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         }).catch(function(){fin('error')});
       });
       if(window.MutationObserver)new MutationObserver(function(){if(!aboutEl.hidden&&!updReady&&!ubusy)upUI('idle')}).observe(aboutEl,{attributes:true,attributeFilter:['hidden']});
-      navigator.serviceWorker.register('sw.js').then(function(reg){
+      function doReg(){navigator.serviceWorker.register('sw.js').then(function(reg){
         reg0=reg;upBtn.hidden=false;upSt.hidden=false;
         reg.addEventListener('updatefound',function(){if(manual)upUI('downloading')});
         var chk=function(){try{reg.update().catch(function(){})}catch(e){}};
         document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});
         window.addEventListener('online',chk);
         setInterval(chk,30*60*1000);chk();
-      }).catch(function(){});
+      }).catch(function(){})}
+      /* nothing is checked until the app has finished loading (UI, camera, face model) + 3 seconds */
+      var wi=setInterval(function(){
+        if(!splashGone)return;clearInterval(wi);
+        setTimeout(function(){armed=true;doReg();showPop()},3000);
+      },250);
     }catch(e){}
   }
   /* ---------- install gate (only enforced in the hosted web-app build) ---------- */
