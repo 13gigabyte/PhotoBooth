@@ -435,8 +435,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <div class="pvcount" id="pvcount" hidden aria-live="polite"></div>
     <button class="pvchk" id="pvchk" type="button" aria-pressed="false" aria-label="Select this photo" hidden><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="about" id="updpop" hidden role="dialog" aria-modal="true" aria-labelledby="upT"><div class="about-in upd-in"><img id="upImg" alt="" width="84" height="84"><div class="upk">A new update available</div><h2 id="upT">PhotoBooth <small id="upV"></small></h2><div class="uplog" id="upLog" hidden></div><button type="button" id="upGo" class="upd">Refresh to update</button><button type="button" id="upLater">Later</button></div></div>
-    <script type="application/json" id="changelog">{"notes":["Pinch to zoom in and out at any spot on the camera preview (trackpad or touch), works with every effect","Two-finger scroll pans around while zoomed in","New Check for Update button in About","Updates are now checked quietly in the background after the app loads, with release notes shown here"]}</script>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v78</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <script type="application/json" id="changelog">{"notes":["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)","Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v79</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -859,14 +859,15 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   }
 
   /* ---------- sizing: canvas matches what the viewport shows ---------- */
-  var fitDone=false,fitT=0,fitTarget=null;
+  var fitDone=false,fitT=0,fitTarget=null,arAnim=false,arT=0,lastR=null;
   function applyFit(){
     fitT=0;var t=fitTarget;if(!t)return;fitTarget=null;
     W=t.W;H=t.H;view.width=src.width=W;view.height=src.height=H;fitDone=true;
     try{paint()}catch(e){}
     if(state==='effects')sizeTiles();
   }
-  function fit(){
+  function fit(now){
+    if(arAnim&&now!==true)return;   /* the box is animating: the buffer stays camera-shaped until it lands */
     var ab=app.getBoundingClientRect(),zz=app.clientWidth?ab.width/app.clientWidth:1,r={width:vp.clientWidth*zz,height:vp.clientHeight*zz};if(r.width<2||r.height<2)return;
     var dpr=Math.min(window.devicePixelRatio||1,2),w=r.width*dpr,h=r.height*dpr,k=Math.min(1,1280/Math.max(w,h));
     var nW=Math.max(2,Math.round(w*k)),nH=Math.max(2,Math.round(h*k));
@@ -874,26 +875,51 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     if(nW===view.width&&nH===view.height){fitTarget=null;clearTimeout(fitT);fitT=0;return}
     /* same shape, just scaled: keep the existing buffer (no reallocation = no blank frame) */
     if(Math.abs(view.width/view.height-nW/nH)<.012&&nW<=view.width*1.02&&nW>=view.width*.5){fitTarget=null;clearTimeout(fitT);fitT=0;return}
-    fitTarget={W:nW,H:nH};clearTimeout(fitT);fitT=setTimeout(applyFit,140);
+    fitTarget={W:nW,H:nH};clearTimeout(fitT);
+    if(now===true){fitT=0;applyFit();return}
+    fitT=setTimeout(applyFit,140);
   }
   var arStrip=false;
+  /* buffer shaped like the camera itself: object-fit:cover then crops it to ANY box exactly like a fresh buffer would,
+     so the box can morph between aspect ratios with no stretching and no pop at the end */
+  function nativeBuf(big){
+    var ar=0;
+    if(source==='camera'&&video&&video.videoWidth)ar=(crop.w||video.videoWidth)/(crop.h||video.videoHeight);
+    else if(source==='image'&&img&&img.naturalWidth)ar=img.naturalWidth/img.naturalHeight;
+    if(!ar)return;
+    var ab=app.getBoundingClientRect(),zz=app.clientWidth?ab.width/app.clientWidth:1,dpr=Math.min(window.devicePixelRatio||1,2);
+    var m=Math.max(W,H,Math.min(1280,Math.round((big||0)*zz*dpr))),w2=ar>=1?m:Math.round(m*ar),h2=ar>=1?Math.round(m/ar):m;
+    if(w2===view.width&&h2===view.height)return;
+    clearTimeout(fitT);fitT=0;fitTarget={W:Math.max(2,w2),H:Math.max(2,h2)};applyFit();
+  }
+  function setBox(n){vp.style.left=n.l+'px';vp.style.top=n.t+'px';vp.style.width=n.w+'px';vp.style.height=n.h+'px';vp.style.right='auto';vp.style.bottom='auto'}
+  function boxGo(o,n,fin){
+    clearTimeout(arT);nativeBuf(Math.max(o.w,o.h,n.w,n.h));arAnim=true;
+    vp.style.transition='none';vp.style.transform='none';setBox(o);void vp.offsetWidth;
+    var e=' .45s cubic-bezier(.2,.75,.25,1)';
+    vp.style.transition='left'+e+',top'+e+',width'+e+',height'+e;setBox(n);
+    arT=setTimeout(function(){arAnim=false;vp.style.transition='none';if(fin)fin();fit(true)},490);
+  }
   function layoutAR(){
-    var a=settings.ar,r={'16:9':16/9,'4:3':4/3,'1:1':1}[a];
+    var a=settings.ar,r={'16:9':16/9,'4:3':4/3,'1:1':1}[a]||0;
     var on=!!r&&state!=='effects',hs=items.length>0,chg=hs!==arStrip;arStrip=hs;
     app.classList.toggle('ar',!!r);
-    if(!on){vp.style.cssText='';return}
-    var o={l:vp.offsetLeft,t:vp.offsetTop,w:vp.clientWidth,h:vp.clientHeight};
+    var ratioChg=lastR!==null&&state!=='effects'&&r!==lastR;if(state!=='effects')lastR=r;
+    var o={l:vp.offsetLeft,t:vp.offsetTop,w:vp.clientWidth,h:vp.clientHeight},ok=o.w>2&&o.h>2;
+    if(!on){
+      if(arAnim&&state==='effects'){clearTimeout(arT);arAnim=false}
+      if(ratioChg&&ok&&state!=='effects'){   /* back to "Follow": grow to full-bleed */
+        boxGo(o,{l:0,t:0,w:app.clientWidth,h:app.clientHeight},function(){vp.style.cssText=''});return}
+      if(!arAnim){vp.style.cssText='';if(state==='effects')fit(true)}
+      return;
+    }
     var aw=app.clientWidth,ah=app.clientHeight-92-(hs?93:0),w=aw,h=w/r;
     if(h>ah){h=ah;w=h*r}
     var n={l:(aw-w)/2,t:(ah-h)/2,w:w,h:h};
-    vp.style.transition='none';vp.style.transform='none';
-    vp.style.left=n.l+'px';vp.style.top=n.t+'px';vp.style.width=n.w+'px';vp.style.height=n.h+'px';vp.style.right='auto';vp.style.bottom='auto';
-    if(chg&&o.w>2&&o.h>2&&(Math.abs(o.w-n.w)>1||Math.abs(o.h-n.h)>1||Math.abs(o.t-n.t)>1)){
-      vp.style.transformOrigin='0 0';
-      vp.style.transform='translate('+(o.l-n.l)+'px,'+(o.t-n.t)+'px) scale('+(o.w/n.w)+','+(o.h/n.h)+')';
-      void vp.offsetWidth;
-      vp.style.transition='transform .45s cubic-bezier(.2,.75,.25,1)';vp.style.transform='none';
-    }
+    if((chg||ratioChg)&&ok&&(Math.abs(o.w-n.w)>1||Math.abs(o.h-n.h)>1||Math.abs(o.t-n.t)>1||Math.abs(o.l-n.l)>1)){boxGo(o,n);return}
+    clearTimeout(arT);arAnim=false;
+    vp.style.transition='none';vp.style.transform='none';setBox(n);
+    fit(true);
   }
   if(window.ResizeObserver)new ResizeObserver(fit).observe(vp);
   if(window.ResizeObserver)new ResizeObserver(layoutAR).observe(app);
