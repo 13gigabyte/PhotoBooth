@@ -72,7 +72,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .app{--bh:92px;zoom:.85;height:100%;position:relative;overflow:hidden;background:#000}
 .viewport{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
 .viewport canvas#view{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
-.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:7}
 .flash.go{animation:flash 1.15s linear}
 .flash.hold{opacity:1}
 .flash.out{animation:flashOut .63s linear}
@@ -185,7 +185,9 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .qdep{display:flex;flex-direction:column;gap:14px}
 .qmenu.qoff .qdep{opacity:.4;pointer-events:none}
 .qsw{display:block;width:19px;height:19px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);margin:auto;box-sizing:border-box}
-@media (max-width:600px){.settings.qmenu{right:10px;width:min(244px,calc(100% - 20px))}}
+@media (max-width:600px){.settings.qmenu{right:10px;width:min(244px,calc(100% - 20px))}.settings.qover:not(.qmenu){visibility:hidden}.settings.qmenu .qback{display:flex}}
+.qmenu .qback{display:none;align-items:center;gap:4px;align-self:flex-start;background:none;border:0;padding:0;margin:-2px 0 -4px;color:inherit;font:inherit;font-size:13px;font-weight:600;text-shadow:inherit;cursor:pointer;opacity:.85}
+.qmenu .qback svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .tgrid button{width:30px;height:30px;padding:0;border:0;border-radius:8px;background:none;cursor:pointer}
 .fcols{flex-wrap:nowrap;gap:4px}
 .fcols button{flex:1 1 0;min-width:20px;max-width:30px;width:auto}
@@ -333,7 +335,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .upd-in{width:300px}
 .upd-in .upk{font-size:12.5px;opacity:.75;margin-top:2px}
 .upd-in .uplog{align-self:stretch;text-align:left;font-size:13px;line-height:1.35;max-height:170px;overflow:auto;margin:8px 0 6px;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.16)}
-.upd-in .uplog ul{margin:0;padding-left:16px}.upd-in .uplog li{margin:2px 0}
+.upd-in .uph{font-weight:700;font-size:12px;opacity:.7;margin:8px 0 2px}.upd-in .uph:first-child{margin-top:0}.upd-in .uplog ul{margin:0;padding-left:16px}.upd-in .uplog li{margin:2px 0}
 
 .countbar.manual{cursor:pointer}
 .srow.off{opacity:.38;pointer-events:none}
@@ -390,6 +392,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <canvas id="view" aria-label="Live viewfinder"></canvas>
     <div class="effects" id="fx" hidden></div>
     <div class="settings qmenu" id="qmenu" role="dialog" aria-label="Four Grid settings" hidden>
+      <button type="button" class="qback" id="qback"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back</button>
       <div class="qprevw" aria-hidden="true"><canvas id="qprev"></canvas></div>
       <div class="srow col2" id="qdur"><span class="lbl">Duration</span>
         <div class="tseg" role="radiogroup" aria-label="Four Grid duration">
@@ -435,8 +438,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <div class="pvcount" id="pvcount" hidden aria-live="polite"></div>
     <button class="pvchk" id="pvchk" type="button" aria-pressed="false" aria-label="Select this photo" hidden><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="about" id="updpop" hidden role="dialog" aria-modal="true" aria-labelledby="upT"><div class="about-in upd-in"><img id="upImg" alt="" width="84" height="84"><div class="upk">A new update available</div><h2 id="upT">PhotoBooth <small id="upV"></small></h2><div class="uplog" id="upLog" hidden></div><button type="button" id="upGo" class="upd">Refresh to update</button><button type="button" id="upLater">Later</button></div></div>
-    <script type="application/json" id="changelog">{"notes":["Fixed the camera randomly zooming in when the room is dark"]}</script>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v80</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <script type="application/json" id="changelog">{"notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v82</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -1569,9 +1572,13 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!aboutEl.hidden)aboutEl.hidden=true});
   $('#qmsw').addEventListener('click',function(){settings.qman=!settings.qman;saveSettings();renderSettings()});
   var qRow=$('#qrow'),qMenu=$('#qmenu'),qPin=false,qT=0;
-  function qShow(o){qMenu.hidden=!o;qRow.setAttribute('aria-expanded',String(o));if(!o)qPin=false}
+  var qNar=window.matchMedia?matchMedia('(max-width:600px)'):null;
+  /* narrow window: there is no room beside the menu, so the Four Grid panel takes its place instead of covering it */
+  function qShow(o){qMenu.hidden=!o;qRow.setAttribute('aria-expanded',String(o));if(!o)qPin=false;setPop.classList.toggle('qover',!!o&&!!qNar&&qNar.matches)}
+  if(qNar&&qNar.addEventListener)qNar.addEventListener('change',function(){qShow(!qMenu.hidden)});
+  $('#qback').addEventListener('click',function(){qShow(false)});
   function qLater(){clearTimeout(qT);qT=setTimeout(function(){if(!qPin)qShow(false)},260)}
-  qRow.addEventListener('mouseenter',function(){clearTimeout(qT);qShow(true)});
+  qRow.addEventListener('mouseenter',function(){if(qNar&&qNar.matches)return;clearTimeout(qT);qShow(true)});
   qRow.addEventListener('mouseleave',qLater);
   qMenu.addEventListener('mouseenter',function(){clearTimeout(qT)});
   qMenu.addEventListener('mouseleave',qLater);
@@ -1906,8 +1913,9 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
           ts.forEach(function(t){var v=(t.match(/id="aboutT">PhotoBooth <small>([^<]+)</)||[])[1]||'',n=parseInt(v.replace(/\D/g,''),10)||0;if(t&&n>bn){bn=n;best={t:t,v:v}}});
           var notes=[];
           try{var m=best&&best.t.match(new RegExp('id="change'+'log"[^>]*>([\\s\\S]*?)<'+'/script>'));if(m)notes=JSON.parse(m[1]).notes||[]}catch(e){}
-          return {v:best?best.v:'',notes:notes};
-        }).catch(function(){return {v:'',notes:[]}});
+          var lg=[];try{var m2=best&&best.t.match(new RegExp('id="change'+'log"[^>]*>([\\s\\S]*?)<'+'/script>'));if(m2)lg=JSON.parse(m2[1]).log||[]}catch(e){}
+          return {v:best?best.v:'',notes:notes,log:lg};
+        }).catch(function(){return {v:'',notes:[],log:[]}});
       }
       function showPop(){
         if(!armed||popShown||!updReady||reloading)return;
@@ -1915,7 +1923,14 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         popShown=true;
         newInfo().then(function(i){
           $('#upV').textContent=i.v;var lg=$('#upLog');lg.innerHTML='';
-          if(i.notes.length){var ul=document.createElement('ul');i.notes.forEach(function(n){var li=document.createElement('li');li.textContent=n;ul.appendChild(li)});lg.appendChild(ul);lg.hidden=false}else lg.hidden=true;
+          /* show every release newer than the one running now (grouped by version when more than one) */
+          var cur=parseInt((($('#aboutT small')||{}).textContent||'').replace(/\D/g,''),10)||0,ents=(i.log||[]).filter(function(e){return e.v>cur});
+          if(!ents.length&&i.notes.length)ents=[{v:0,notes:i.notes}];
+          ents.forEach(function(e){
+            if(ents.length>1&&e.v){var h=document.createElement('div');h.className='uph';h.textContent='v'+e.v;lg.appendChild(h)}
+            var ul=document.createElement('ul');e.notes.forEach(function(n){var li=document.createElement('li');li.textContent=n;ul.appendChild(li)});lg.appendChild(ul);
+          });
+          lg.hidden=!ents.length;
           popEl.hidden=false;$('#upGo').focus();
         });
       }
