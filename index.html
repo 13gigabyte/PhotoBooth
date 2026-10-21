@@ -313,8 +313,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.thumb.new{animation:none}.quad img{transition:none!important}.flash.go{animation:flashSolid .5s steps(1,end)}.countbar .n,.shutter{transition:none}}
 
 .app.ar{background:var(--solid)}
-.app.ar .strip{background:var(--solid);-webkit-backdrop-filter:none;backdrop-filter:none}
-.app.ar .bar{background:var(--solid);-webkit-backdrop-filter:none;backdrop-filter:none}
+.refl{position:absolute;z-index:1;pointer-events:none;display:none}
 .arseg{display:flex;gap:2px;padding:2px;border-radius:8px;background:rgba(255,255,255,.14)}
 .arseg button{flex:1;border:0;background:none;color:#fff;font-size:12.5px;height:26px;border-radius:6px;cursor:pointer;padding:0 4px;white-space:nowrap}
 .arseg button.on{background:rgba(255,255,255,.3)}
@@ -438,8 +437,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     <div class="pvcount" id="pvcount" hidden aria-live="polite"></div>
     <button class="pvchk" id="pvchk" type="button" aria-pressed="false" aria-label="Select this photo" hidden><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="about" id="updpop" hidden role="dialog" aria-modal="true" aria-labelledby="upT"><div class="about-in upd-in"><img id="upImg" alt="" width="84" height="84"><div class="upk">A new update available</div><h2 id="upT">PhotoBooth <small id="upV"></small></h2><div class="uplog" id="upLog" hidden></div><button type="button" id="upGo" class="upd">Refresh to update</button><button type="button" id="upLater">Later</button></div></div>
-    <script type="application/json" id="changelog">{"notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v82</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <script type="application/json" id="changelog">{"notes": ["In Follow, the picture now stops at the bar and the bar blurs a mirrored copy of it (like the other aspect ratios do) instead of the plain window colour", "In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block", "Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy", "Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 84, "notes": ["In Follow, the picture now stops at the bar and the bar blurs a mirrored copy of it (like the other aspect ratios do) instead of the plain window colour"]}, {"v": 84, "notes": ["In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block"]}, {"v": 83, "notes": ["Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy"]}, {"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v84</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -498,6 +497,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     </div>
   </div>
 
+  <canvas class="refl" id="refl" aria-hidden="true"></canvas>
   <div class="strip" id="strip" aria-label="Captured photos and videos"></div>
   <div class="sbar" id="sbar" aria-hidden="true"><i></i></div>
 
@@ -577,7 +577,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   var QPAL=[['transparent','Transparent'],['#000000','Black'],['#ffffff','White'],['#6750a4','Primary'],['#eaddff','Primary container'],['#625b71','Secondary'],['#e8def8','Secondary container'],['#7d5260','Tertiary'],['#ffd8e4','Tertiary container'],['#b3261e','Error'],['#f9dedc','Error container'],['#386a20','Green'],['#b7f397','Green container'],['#0061a4','Blue'],['#d1e4ff','Blue container'],['#6d5e00','Yellow'],['#ffe084','Yellow container'],['#79747e','Outline']];
   var HEXRE=/^#[0-9a-f]{6}$/;
   var settings={qa:100,qcust:[],qb:false,qc:'transparent',qt:8,qo:true,qr:0,quad:'default',flash:true,timer:3,grid:false,mirror:true,sound:true,zoom:1,br:0,co:100,sa:100,ar:'dynamic',qman:false,fc:'#ffffff',fcust:[]};
-  try{var sv=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv){if(typeof sv.flash==='boolean')settings.flash=sv.flash;if(typeof sv.fc==='string'&&HEXRE.test(sv.fc))settings.fc=sv.fc;if(Array.isArray(sv.fcust))settings.fcust=sv.fcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).slice(0,3);if([0,3,5,10].indexOf(sv.timer)>=0)settings.timer=sv.timer;if(QGAP[sv.quad])settings.quad=sv.quad;if(typeof sv.qb==='boolean')settings.qb=sv.qb;if(typeof sv.qo==='boolean')settings.qo=sv.qo;if(typeof sv.qc==='string'&&(sv.qc==='transparent'||HEXRE.test(sv.qc)))settings.qc=sv.qc;if(typeof sv.qa==='number'&&sv.qa>=0&&sv.qa<=100)settings.qa=sv.qa;if(Array.isArray(sv.qcust))settings.qcust=sv.qcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).slice(0,6);if(typeof sv.qt==='number'&&sv.qt>=1&&sv.qt<=40)settings.qt=sv.qt;if(typeof sv.qr==='number'&&sv.qr>=0&&sv.qr<=40)settings.qr=sv.qr;['grid','mirror','sound'].forEach(function(k){if(typeof sv[k]==='boolean')settings[k]=sv[k]});[['zoom',1,3],['br',-100,100],['co',50,150],['sa',0,200]].forEach(function(r){if(typeof sv[r[0]]==='number'&&sv[r[0]]>=r[1]&&sv[r[0]]<=r[2])settings[r[0]]=sv[r[0]]})}}catch(e){}
+  try{var sv=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv){if(typeof sv.flash==='boolean')settings.flash=sv.flash;if(typeof sv.fc==='string'&&HEXRE.test(sv.fc))settings.fc=sv.fc;if(Array.isArray(sv.fcust))settings.fcust=sv.fcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).sort(function(a,b){return (b===sv.fc)-(a===sv.fc)}).slice(0,1);if([0,3,5,10].indexOf(sv.timer)>=0)settings.timer=sv.timer;if(QGAP[sv.quad])settings.quad=sv.quad;if(typeof sv.qb==='boolean')settings.qb=sv.qb;if(typeof sv.qo==='boolean')settings.qo=sv.qo;if(typeof sv.qc==='string'&&(sv.qc==='transparent'||HEXRE.test(sv.qc)))settings.qc=sv.qc;if(typeof sv.qa==='number'&&sv.qa>=0&&sv.qa<=100)settings.qa=sv.qa;if(Array.isArray(sv.qcust))settings.qcust=sv.qcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).slice(0,6);if(typeof sv.qt==='number'&&sv.qt>=1&&sv.qt<=40)settings.qt=sv.qt;if(typeof sv.qr==='number'&&sv.qr>=0&&sv.qr<=40)settings.qr=sv.qr;['grid','mirror','sound'].forEach(function(k){if(typeof sv[k]==='boolean')settings[k]=sv[k]});[['zoom',1,3],['br',-100,100],['co',50,150],['sa',0,200]].forEach(function(r){if(typeof sv[r[0]]==='number'&&sv[r[0]]>=r[1]&&sv[r[0]]<=r[2])settings[r[0]]=sv[r[0]]})}}catch(e){}
   try{var sv2=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv2&&['dynamic','16:9','4:3','1:1'].indexOf(sv2.ar)>=0)settings.ar=sv2.ar}catch(e){}
   try{var sv3=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv3&&typeof sv3.qman==='boolean')settings.qman=sv3.qman}catch(e){}
 
@@ -903,29 +903,29 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     vp.style.transition='left'+e+',top'+e+',width'+e+',height'+e;setBox(n);
     arT=setTimeout(function(){arAnim=false;vp.style.transition='none';if(fin)fin();fit(true)},490);
   }
-  function layoutAR(){
-    var a=settings.ar,r={'16:9':16/9,'4:3':4/3,'1:1':1}[a]||0;
-    var on=!!r&&state!=='effects',hs=items.length>0,chg=hs!==arStrip;arStrip=hs;
-    app.classList.toggle('ar',!!r);
-    var ratioChg=lastR!==null&&state!=='effects'&&r!==lastR;if(state!=='effects')lastR=r;
+  function layoutAR(rs){
+    var a=settings.ar,aw=app.clientWidth,hs=items.length>0,ah=app.clientHeight-92-(hs?93:0);
+    /* "Follow" is a box that fills everything above the bar (and filmstrip), exactly like a fixed ratio does: the
+       bar then blurs a mirrored copy of the picture instead of a flat window colour */
+    var r={'16:9':16/9,'4:3':4/3,'1:1':1}[a]||(ah>0?aw/ah:1);
+    var on=state!=='effects',chg=hs!==arStrip;arStrip=hs;
+    app.classList.toggle('ar',a!=='dynamic'||on);
+    var ratioChg=lastR!==null&&on&&a!==lastR;if(on)lastR=a;
     var o={l:vp.offsetLeft,t:vp.offsetTop,w:vp.clientWidth,h:vp.clientHeight},ok=o.w>2&&o.h>2;
-    if(!on){
-      if(arAnim&&state==='effects'){clearTimeout(arT);arAnim=false}
-      if(ratioChg&&ok&&state!=='effects'){   /* back to "Follow": grow to full-bleed */
-        boxGo(o,{l:0,t:0,w:app.clientWidth,h:app.clientHeight},function(){vp.style.cssText=''});return}
-      if(!arAnim){vp.style.cssText='';if(state==='effects')fit(true)}
-      return;
+    if(!on||ah<2){
+      if(arAnim){clearTimeout(arT);arAnim=false}
+      vp.style.cssText='';fit(true);return;
     }
-    var aw=app.clientWidth,ah=app.clientHeight-92-(hs?93:0),w=aw,h=w/r;
+    var w=aw,h=w/r;
     if(h>ah){h=ah;w=h*r}
     var n={l:(aw-w)/2,t:(ah-h)/2,w:w,h:h};
     if((chg||ratioChg)&&ok&&(Math.abs(o.w-n.w)>1||Math.abs(o.h-n.h)>1||Math.abs(o.t-n.t)>1||Math.abs(o.l-n.l)>1)){boxGo(o,n);return}
     clearTimeout(arT);arAnim=false;
     vp.style.transition='none';vp.style.transform='none';setBox(n);
-    fit(true);
+    if(rs&&a==='dynamic')fit();else fit(true);   /* dragging the window edge changes the shape every frame: keep the debounce */
   }
   if(window.ResizeObserver)new ResizeObserver(fit).observe(vp);
-  if(window.ResizeObserver)new ResizeObserver(layoutAR).observe(app);
+  if(window.ResizeObserver)new ResizeObserver(function(){layoutAR(true)}).observe(app);
   window.addEventListener('resize',fit);
 
   function cover(c,el,sw,sh,dw,dh,mirror,rx,ry,rw,rh){
@@ -1078,10 +1078,24 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       vctx.drawImage(src,0,0);try{vctx.filter='none'}catch(e){}
     }
   }
+  /* fixed-aspect modes: the bar/filmstrip blur a vertically mirrored copy of the picture's bottom edge instead of the flat grey window */
+  var refl=$('#refl'),rfx=refl.getContext('2d');
+  function updateRefl(){
+    var on=app.classList.contains('ar')&&(state==='idle'||state==='count'||state==='manual'||state==='rec')&&view.width>2&&view.height>2;
+    if(!on){if(refl.style.display!=='none')refl.style.display='none';return}
+    var ab=app.getBoundingClientRect(),zz=app.clientWidth?ab.width/app.clientWidth:1,r=vp.getBoundingClientRect();
+    var rh=(ab.bottom-r.bottom)/zz,bw=r.width/zz,bh=r.height/zz;
+    if(rh<3||bw<2||bh<2){if(refl.style.display!=='none')refl.style.display='none';return}
+    var st=refl.style;st.display='block';st.left=((r.left-ab.left)/zz)+'px';st.top=((r.bottom-ab.top)/zz-1)+'px';st.width=bw+'px';st.height=(rh+1)+'px';
+    var s0=Math.max(bw/W,bh/H),vw=bw/s0,vh=bh/s0,sx=(W-vw)/2,sy=(H-vh)/2,take=Math.min(rh,bh)/s0;
+    var dw=Math.max(2,Math.min(192,Math.round(bw))),dh=Math.max(2,Math.round(dw*rh/bw));
+    if(refl.width!==dw||refl.height!==dh){refl.width=dw;refl.height=dh}
+    rfx.save();rfx.translate(0,dh);rfx.scale(1,-1);rfx.drawImage(view,sx,sy+vh-take,vw,take,0,0,dw,dh);rfx.restore();
+  }
   function frame(){
     if(gridOv)updateGrid();
     updateFace();updateFaceUi();updatePxHandle();updateQPrev();
-    paint();
+    paint();updateRefl();
     requestAnimationFrame(frame);
   }
   fit();requestAnimationFrame(frame);
@@ -1667,7 +1681,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     vr.addEventListener('input',function(){V=+vr.value/100;wheelOn(cv,V);apply(true)});
     done.addEventListener('click',function(){
       var hx=hsv2hex(H,S,V);settings.fc=hx;
-      if(!FPAL.some(function(e){return e[0]===hx}))settings.fcust=[hx].concat(settings.fcust.filter(function(h){return h!==hx})).slice(0,3);
+      if(!FPAL.some(function(e){return e[0]===hx}))settings.fcust=[hx].concat(settings.fcust.filter(function(h){return h!==hx})).slice(0,1);
       saveSettings();applyFlashColor();el.hidden=true;buildFCols();
     });
     return {el:el,open:function(o){el.hidden=!o;if(!o)return;var hv=hex2hsv(HEXRE.test(settings.fc)?settings.fc:'#ffffff');H=hv[0];S=hv[1];V=Math.max(0.15,hv[2]);vr.value=String(Math.round(V*100));wheelOn(cv,V);apply(false)}};
