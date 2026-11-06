@@ -313,39 +313,43 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.thumb.new{animation:none}.quad img{transition:none!important}.flash.go{animation:flashSolid .5s steps(1,end)}.countbar .n,.shutter{transition:none}}
 
 .app.ar{background:var(--solid)}
-.refl{position:absolute;z-index:1;pointer-events:none;display:none}
 .arseg{display:flex;gap:2px;padding:2px;border-radius:8px;background:rgba(255,255,255,.14)}
 .arseg button{flex:1;border:0;background:none;color:#fff;font-size:12.5px;height:26px;border-radius:6px;cursor:pointer;padding:0 4px;white-space:nowrap}
 .arseg button.on{background:rgba(255,255,255,.3)}
 .srow.abt{width:100%;border:0;background:none;text-align:left;cursor:pointer;padding:0;color:inherit}
-.about{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:24px}
-.about-in{width:260px;max-width:100%;box-sizing:border-box;padding:26px 22px 20px;border-radius:18px;background:linear-gradient(90deg,var(--bar-a),var(--bar-b) 52%,var(--bar-c));-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:1px solid rgba(255,255,255,.28);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;box-shadow:0 18px 50px rgba(0,0,0,.4)}
-.about-in img{width:84px;height:84px;border-radius:19px;box-shadow:0 6px 20px rgba(0,0,0,.3);margin-bottom:8px}
-.about-in h2{margin:0;font-size:24px;font-weight:650}
+.about,.tour{--cw:min(540px,calc(100vw - 32px),calc((100vh - 32px)*1.062));--u:calc(var(--cw)/1350)}
+.about{--cw:min(400px,calc(100vw - 32px))}
+.about{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:16px;box-sizing:border-box}
+.about-in{position:relative;width:var(--cw);max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;padding:calc(var(--u)*96) calc(var(--u)*73) calc(var(--u)*73);border-radius:34px;background:linear-gradient(90deg,var(--bar-a),var(--bar-b) 52%,var(--bar-c));-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:1px solid rgba(255,255,255,.28);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center;text-align:center;gap:calc(var(--u)*14);box-shadow:0 18px 50px rgba(0,0,0,.4);scrollbar-width:none}
+.about-in::-webkit-scrollbar{display:none}
+.about-in img{width:calc(var(--u)*250);height:calc(var(--u)*250);border-radius:calc(var(--u)*56);box-shadow:0 6px 20px rgba(0,0,0,.3);margin-bottom:calc(var(--u)*16)}
+.about-in h2{margin:0;font-size:calc(var(--u)*80);font-weight:650}
 .about-in h2 small{font-size:.5em;font-weight:500;opacity:.65;margin-left:2px}
-.about-in .by{font-size:12px;opacity:.6}
-.about-in button{margin-top:14px;border:0;border-radius:18px;height:36px;padding:0 30px;font-size:15px;font-weight:600;color:#fff;background:#f0301f;cursor:pointer}
-.about-in button.upd{margin-top:8px;width:100%;height:36px;padding:0;font-size:15px;background:#f0301f;color:#fff}
+.about-in .by{font-size:calc(var(--u)*40);opacity:.6}
+.about-in button{margin-top:calc(var(--u)*30);border:0;border-radius:999px;height:calc(var(--u)*122);padding:0 calc(var(--u)*80);font:inherit;font-size:calc(var(--u)*44);font-weight:600;color:#fff;background:#f0301f;cursor:pointer}
+.about-in button.upd{margin-top:calc(var(--u)*14);width:100%;padding:0;background:#f0301f;color:#fff}
 .about-in button.upd.go{background:#f0301f;color:#fff}
 .about-in button.upd:disabled{opacity:.6;cursor:default}
-.about-in .updst{font-size:12px;opacity:.7;margin-top:12px;min-height:15px}
-.about-in #aboutDone,.about-in #upLater{width:100%;margin-top:8px;background:rgba(127,127,140,.28);color:inherit}
-.about-in button.upd[hidden]+#aboutDone{margin-top:14px}
-.tour{--cw:min(440px,calc(100vw - 32px),calc((100vh - 32px)*1.062));--u:calc(var(--cw)/1350);position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transition:opacity .3s ease}
+.about-in .updst{font-size:calc(var(--u)*36);opacity:.7;margin-top:calc(var(--u)*30);min-height:calc(var(--u)*44)}
+.about-in #aboutDone,.about-in #upLater{width:100%;margin-top:calc(var(--u)*14);background:rgba(127,127,140,.28);color:inherit}
+.about-in button.upd[hidden]+#aboutDone{margin-top:calc(var(--u)*30)}
+.about-in .abhelp{position:absolute;top:calc(var(--u)*52);right:calc(var(--u)*52);width:calc(var(--u)*92);height:calc(var(--u)*92);margin:0;padding:0;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);font-size:calc(var(--u)*50);font-weight:600;line-height:1;display:flex;align-items:center;justify-content:center}
+.about-in .abhelp:hover{background:rgba(255,255,255,.28)}
+.tour{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transition:opacity .3s ease}
 .tour.in{opacity:1}
 .tour[hidden]{display:none}
-.tcard{outline:none;position:relative;width:var(--cw);height:calc(var(--u)*1271);border-radius:calc(var(--u)*105);overflow:hidden;background:rgba(217,217,217,.82);-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:1px solid rgba(255,255,255,.35);box-sizing:border-box;box-shadow:0 24px 70px rgba(0,0,0,.45);color:#111;transform:scale(.94);transition:transform .45s cubic-bezier(.2,.9,.25,1)}
+.tcard{outline:none;position:relative;width:var(--cw);height:calc(var(--u)*1271);border-radius:min(34px,calc(var(--u)*105));overflow:hidden;background:rgba(222,222,226,.92);-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);box-shadow:0 24px 70px rgba(0,0,0,.45);color:#111;transform:scale(.94);transition:transform .45s cubic-bezier(.2,.9,.25,1)}
 .tour.in .tcard{transform:none}
-.timg{position:absolute;left:0;top:0;width:100%;height:calc(var(--u)*759);overflow:hidden;background:#b9b9bd}
+.timg{position:absolute;left:-2px;top:-2px;width:calc(100% + 4px);height:calc(var(--u)*759 + 2px);overflow:hidden;background:#b9b9bd}
 .timg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);transition:opacity .45s ease,transform .7s cubic-bezier(.2,.8,.25,1)}
 .timg img.on{opacity:1;transform:none}
-.ttext{position:absolute;left:0;right:0;top:calc(var(--u)*782);padding:0 calc(var(--u)*72);text-align:center;transition:opacity .14s ease,transform .14s ease}
+.ttext{position:absolute;left:0;right:0;top:calc(var(--u)*759);height:calc(var(--u)*316);padding:0 calc(var(--u)*72);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;text-align:center;transition:opacity .14s ease,transform .14s ease}
 .ttext.sw{opacity:0;transform:translateY(calc(var(--u)*10))}
 .ttext h2{margin:0;font-size:calc(var(--u)*62);line-height:1.16;font-weight:800;letter-spacing:-.012em;color:#000}
 .ttext p{margin:calc(var(--u)*8) 0 0;font-size:calc(var(--u)*34);line-height:1.17;color:#1b1b1b}
 .tctl{position:absolute;left:calc(var(--u)*73);right:calc(var(--u)*73);bottom:calc(var(--u)*73);height:calc(var(--u)*122)}
 .tctl button{border:0;padding:0;margin:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.tnext{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:999px;background:#e54b4b;color:#fff;font-size:calc(var(--u)*42);font-weight:500;letter-spacing:.01em;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*20);overflow:hidden;white-space:nowrap;transition:left .55s cubic-bezier(.3,.85,.25,1),width .55s cubic-bezier(.3,.85,.25,1),filter .15s}
+.tnext{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:999px;background:var(--red);color:#fff;font-size:calc(var(--u)*42);font-weight:500;letter-spacing:.01em;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*20);overflow:hidden;white-space:nowrap;transition:left .55s cubic-bezier(.3,.85,.25,1),width .55s cubic-bezier(.3,.85,.25,1),filter .15s}
 .tour.mid .tnext{left:calc(var(--u)*939);width:calc(var(--u)*265)}
 .tnext:hover{filter:brightness(1.05)}.tnext:active{filter:brightness(.92)}
 .tnext span{transition:opacity .12s ease}.tnext span.sw{opacity:0}
@@ -360,11 +364,25 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .tour.mid .tdots{opacity:1}
 .tdots i{display:block;width:calc(var(--u)*16);height:calc(var(--u)*16);border-radius:999px;background:#777;transition:width .35s cubic-bezier(.3,.85,.25,1)}
 .tdots i.on{width:calc(var(--u)*76)}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]) .tcard{background:rgba(40,40,46,.8);color:#f2f2f5}
+:root:not([data-theme="light"]) .ttext h2{color:#fff}
+:root:not([data-theme="light"]) .ttext p{color:rgba(255,255,255,.82)}
+:root:not([data-theme="light"]) .tback{background:rgba(255,255,255,.16);color:#fff}
+:root:not([data-theme="light"]) .tback:hover{background:rgba(255,255,255,.26)}
+:root:not([data-theme="light"]) .tdots i{background:rgba(255,255,255,.55)}
+}
+:root[data-theme="dark"] .tcard{background:rgba(40,40,46,.8);color:#f2f2f5}
+:root[data-theme="dark"] .ttext h2{color:#fff}
+:root[data-theme="dark"] .ttext p{color:rgba(255,255,255,.82)}
+:root[data-theme="dark"] .tback{background:rgba(255,255,255,.16);color:#fff}
+:root[data-theme="dark"] .tback:hover{background:rgba(255,255,255,.26)}
+:root[data-theme="dark"] .tdots i{background:rgba(255,255,255,.55)}
 .tctl button:focus-visible{outline:2px solid #1a73e8;outline-offset:2px}
-.upd-in{width:300px}
-.upd-in .upk{font-size:12.5px;opacity:.75;margin-top:2px}
-.upd-in .uplog{align-self:stretch;text-align:left;font-size:13px;line-height:1.35;max-height:170px;overflow:auto;margin:8px 0 6px;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.16)}
-.upd-in .uph{font-weight:700;font-size:12px;opacity:.7;margin:8px 0 2px}.upd-in .uph:first-child{margin-top:0}.upd-in .uplog ul{margin:0;padding-left:16px}.upd-in .uplog li{margin:2px 0}
+.upd-in .upk{font-size:calc(var(--u)*38);opacity:.75;margin-top:calc(var(--u)*-4)}
+.upd-in .uplog{align-self:stretch;text-align:left;font-size:calc(var(--u)*38);line-height:1.35;max-height:calc(var(--u)*430);overflow:auto;margin:calc(var(--u)*10) 0 calc(var(--u)*6);padding:calc(var(--u)*30) calc(var(--u)*38);border-radius:calc(var(--u)*40);background:rgba(0,0,0,.16)}
+.upd-in .uph{font-weight:700;font-size:calc(var(--u)*34);opacity:.7;margin:calc(var(--u)*20) 0 calc(var(--u)*4)}.upd-in .uph:first-child{margin-top:0}
+.upd-in .uplog ul{margin:0;padding-left:calc(var(--u)*44)}.upd-in .uplog li{margin:calc(var(--u)*6) 0}
 
 .countbar.manual{cursor:pointer}
 .srow.off{opacity:.38;pointer-events:none}
@@ -478,8 +496,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         </div>
       </div>
     </div>
-    <script type="application/json" id="changelog">{"notes": ["New welcome tour the first time the installed app is opened", "In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block", "Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy", "Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 85, "notes": ["New welcome tour the first time the installed app is opened"]}, {"v": 84, "notes": ["In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block"]}, {"v": 83, "notes": ["Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy"]}, {"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v85</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <script type="application/json" id="changelog">{"notes": ["About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again", "Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red", "Welcome tour now follows dark mode", "Welcome, About and update pop-ups: a more moderate size, with the original rounded corners", "Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners", "New welcome tour the first time the installed app is opened", "In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block", "Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy", "Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 90, "notes": ["About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again"]}, {"v": 89, "notes": ["Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red"]}, {"v": 88, "notes": ["Welcome tour now follows dark mode"]}, {"v": 87, "notes": ["Welcome, About and update pop-ups: a more moderate size, with the original rounded corners"]}, {"v": 86, "notes": ["Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners"]}, {"v": 85, "notes": ["New welcome tour the first time the installed app is opened"]}, {"v": 84, "notes": ["In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block"]}, {"v": 83, "notes": ["Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy"]}, {"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><button type="button" class="abhelp" id="abHelp" aria-label="Show the welcome tour" title="Welcome tour">?</button><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v90</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -538,7 +556,6 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     </div>
   </div>
 
-  <canvas class="refl" id="refl" aria-hidden="true"></canvas>
   <div class="strip" id="strip" aria-label="Captured photos and videos"></div>
   <div class="sbar" id="sbar" aria-hidden="true"><i></i></div>
 
@@ -1119,24 +1136,10 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       vctx.drawImage(src,0,0);try{vctx.filter='none'}catch(e){}
     }
   }
-  /* fixed-aspect modes: the bar/filmstrip blur a vertically mirrored copy of the picture's bottom edge instead of the flat grey window */
-  var refl=$('#refl'),rfx=refl.getContext('2d');
-  function updateRefl(){
-    var on=app.classList.contains('ar')&&(state==='idle'||state==='count'||state==='manual'||state==='rec')&&view.width>2&&view.height>2;
-    if(!on){if(refl.style.display!=='none')refl.style.display='none';return}
-    var ab=app.getBoundingClientRect(),zz=app.clientWidth?ab.width/app.clientWidth:1,r=vp.getBoundingClientRect();
-    var rh=(ab.bottom-r.bottom)/zz,bw=r.width/zz,bh=r.height/zz;
-    if(rh<3||bw<2||bh<2){if(refl.style.display!=='none')refl.style.display='none';return}
-    var st=refl.style;st.display='block';st.left=((r.left-ab.left)/zz)+'px';st.top=((r.bottom-ab.top)/zz)+'px';st.width=bw+'px';st.height=rh+'px';
-    var s0=Math.max(bw/W,bh/H),vw=bw/s0,vh=bh/s0,sx=(W-vw)/2,sy=(H-vh)/2,take=Math.min(rh,bh)/s0;
-    var dw=Math.max(2,Math.min(192,Math.round(bw))),dh=Math.max(2,Math.round(dw*rh/bw));
-    if(refl.width!==dw||refl.height!==dh){refl.width=dw;refl.height=dh}
-    rfx.save();rfx.translate(0,dh);rfx.scale(1,-1);rfx.drawImage(view,sx,sy+vh-take,vw,take,0,0,dw,dh);rfx.restore();
-  }
   function frame(){
     if(gridOv)updateGrid();
     updateFace();updateFaceUi();updatePxHandle();updateQPrev();
-    paint();updateRefl();
+    paint();
     requestAnimationFrame(frame);
   }
   fit();requestAnimationFrame(frame);
@@ -1991,14 +1994,16 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       else if(e.key==='ArrowLeft'){e.preventDefault();back()}
     }
     tn.onclick=next;tb.onclick=back;tourEl.addEventListener('keydown',key);
+    imgs.forEach(function(i){i.classList.remove('on')});layer=0;
     show(0,true);app.inert=true;tourEl.hidden=false;
     requestAnimationFrame(function(){requestAnimationFrame(function(){tourEl.classList.add('in');tc.focus({preventScroll:true})})});
   }
+  $('#abHelp').addEventListener('click',function(){aboutEl.hidden=true;openTour(true)});
   function scheduleTour(installed,enforced){
     var force=/(^|[#&])tour\b/.test(location.hash),seen=false;
     try{seen=localStorage.getItem('pb.tour')==='1'}catch(e){}
     if(!force&&!(enforced&&installed&&!seen))return;
-    var iv=setInterval(function(){if(!splashGone)return;clearInterval(iv);setTimeout(function(){openTour(force)},450)},200);
+    var iv=setInterval(function(){if(!splashGone||source==='none')return;clearInterval(iv);setTimeout(function(){openTour(force)},450)},200);
   }
   /* ---------- self-updating: look for a new version on launch, on focus and every 30 min ---------- */
   function setupUpdates(){
