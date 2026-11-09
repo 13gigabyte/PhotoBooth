@@ -69,7 +69,7 @@ html,body{height:100%;margin:0;overflow:hidden}
 body{background:#000;color:var(--ink);font-family:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-user-select:none;user-select:none}
 button{font:inherit;color:inherit}
 button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.app{--bh:92px;zoom:.85;height:100%;position:relative;overflow:hidden;background:#000}
+.app{--bh:80px;--sh:76px;--ts:1;--bs:1;--hs:1;zoom:.85;height:100%;position:relative;overflow:hidden;background:#000}
 .viewport{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
 .viewport canvas#view{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
 .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:7}
@@ -95,51 +95,51 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .effects{position:absolute;inset:0 0 var(--bh) 0;z-index:3;background:#0b0b0d;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:3px;padding:3px}
 .tile{position:relative;border:0;padding:0;background:#000;overflow:hidden;cursor:pointer;min-width:0;min-height:0}
 .tile canvas{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
-.tile span{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:#fff;font-size:clamp(12px,2.2vw,24px);font-weight:400;text-shadow:0 1px 4px rgba(0,0,0,.85)}
+.tile span{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:#fff;font-size:calc(clamp(12px,2.2vw,24px)*var(--ts));font-weight:400;text-shadow:0 1px 4px rgba(0,0,0,.85)}
 .tile.sel{outline:3px solid #fff;outline-offset:-3px}
 
-.strip{display:none;position:absolute;left:0;right:0;bottom:var(--bh);z-index:4;height:93px;background:var(--strip);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);padding:0 6px;gap:6px;align-items:center;overflow-x:auto;box-sizing:border-box}
+.strip{display:none;position:absolute;left:0;right:0;bottom:var(--bh);z-index:4;height:var(--sh);background:var(--strip);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);padding:0 6px;gap:6px;align-items:center;overflow-x:auto;box-sizing:border-box}
 .strip.on{display:flex}
 .strip .spacer{flex:1 0 0}
-.thumb{flex:none;width:122px;height:82px;border:0;padding:0;background:#000;position:relative;cursor:pointer;overflow:hidden}
+.thumb{flex:none;width:calc(100px*var(--hs));height:calc(66px*var(--hs));border:0;padding:0;background:#000;position:relative;cursor:pointer;overflow:hidden}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.thumb b{position:absolute;left:5px;bottom:4px;font-size:12px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums}
+.thumb b{position:absolute;left:5px;bottom:4px;font-size:calc(12px*var(--ts));font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);font-variant-numeric:tabular-nums}
 
 .bar{height:var(--bh);position:absolute;left:0;right:0;bottom:0;z-index:4;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 24px;box-sizing:border-box;background:linear-gradient(90deg,var(--bar-a),var(--bar-b) 52%,var(--bar-c));-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border-top:1px solid rgba(255,255,255,.28)}
 .col{display:flex;align-items:center;min-width:0}
 .col.r{justify-content:flex-end}
-.seg{display:flex;width:148px;height:32px;background:var(--seg-bg);border-radius:9px;padding:0}
+.seg{display:flex;width:calc(148px*var(--bs));height:calc(32px*var(--bs));background:var(--seg-bg);border-radius:9px;padding:0}
 .seg button{flex:1;border:0;background:none;color:var(--seg-fg);display:grid;place-items:center;border-radius:8px;padding:0;cursor:pointer}
 .seg button.on{background:var(--seg-on);color:#fff}
-.seg svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.timer{font-size:30px;color:var(--timer);font-variant-numeric:tabular-nums;letter-spacing:.5px}
-.shutter,.stopbtn{width:70px;height:70px;border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;transition:transform .08s}
+.seg svg{width:calc(22px*var(--ts));height:calc(22px*var(--ts));fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.timer{font-size:calc(30px*var(--ts));color:var(--timer);font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.shutter,.stopbtn{width:min(calc(60px*var(--bs)),calc(var(--bh) - 14px));height:min(calc(60px*var(--bs)),calc(var(--bh) - 14px));border-radius:50%;border:0;padding:0;cursor:pointer;display:grid;place-items:center;transition:transform .08s}
 .shutter{background:linear-gradient(180deg,#f6402f,#e92a1a);color:#fff;box-shadow:0 0 0 3px var(--ring),0 0 0 4px rgba(0,0,0,.14)}
 .shutter:active,.stopbtn:active{transform:scale(.94)}
-.shutter svg{width:30px;height:30px;fill:currentColor}
+.shutter svg{width:calc(27px*var(--ts));height:calc(27px*var(--ts));fill:currentColor}
 .shutter svg .cut{fill:none;stroke:var(--red);stroke-width:2.2}
 .shutter svg .dot{fill:var(--red);stroke:none}
 .stopbtn{background:#f4f2f6;box-shadow:0 0 0 3px var(--ring),0 0 0 4px rgba(0,0,0,.14)}
-.stopbtn i{width:30px;height:30px;border-radius:6px;background:#f4453b;display:block}
-.pill{border:0;border-radius:8px;height:30px;width:132px;background:var(--pill);color:var(--pill-fg);font-size:16px;font-weight:500;cursor:pointer}
-.iconbtn{position:relative;border:0;background:none;color:var(--seg-fg);width:44px;height:44px;border-radius:10px;cursor:pointer;display:grid;place-items:center}
-.iconbtn svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.stopbtn i{width:calc(26px*var(--ts));height:calc(26px*var(--ts));border-radius:6px;background:#f4453b;display:block}
+.pill{border:0;border-radius:8px;height:calc(30px*var(--bs));width:calc(132px*var(--bs));background:var(--pill);color:var(--pill-fg);font-size:calc(16px*var(--ts));font-weight:500;cursor:pointer}
+.iconbtn{position:relative;border:0;background:none;color:var(--seg-fg);width:calc(44px*var(--bs));height:calc(44px*var(--bs));border-radius:10px;cursor:pointer;display:grid;place-items:center}
+.iconbtn svg{width:calc(26px*var(--ts));height:calc(26px*var(--ts));fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .pager{display:flex;align-items:center;gap:24px}
-.pager .arrow{border:0;background:none;color:var(--pg);width:40px;height:40px;display:grid;place-items:center;cursor:pointer;padding:0}
-.pager .arrow svg{width:30px;height:30px;fill:currentColor}
-.pager .dot{width:20px;height:20px;border-radius:50%;border:0;background:var(--pg);padding:0;cursor:pointer}
+.pager .arrow{border:0;background:none;color:var(--pg);width:calc(40px*var(--bs));height:calc(40px*var(--bs));display:grid;place-items:center;cursor:pointer;padding:0}
+.pager .arrow svg{width:calc(30px*var(--ts));height:calc(30px*var(--ts));fill:currentColor}
+.pager .dot{width:calc(20px*var(--bs));height:calc(20px*var(--bs));border-radius:50%;border:0;background:var(--pg);padding:0;cursor:pointer}
 .pager .dot.on{background:var(--pg-on)}
 .countbar{position:absolute;inset:0;background:rgba(232,58,46,.9);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
 .countbar .n{width:90px;text-align:center;font-size:48px;opacity:.38;transition:opacity .15s;font-variant-numeric:tabular-nums}
 .countbar .n.on{opacity:1}
-.disc{width:52px;height:52px;margin-left:24px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center}
-.disc svg{width:26px;height:26px;fill:currentColor}
+.disc{width:calc(52px*var(--bs));height:calc(52px*var(--bs));margin-left:24px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center}
+.disc svg{width:calc(26px*var(--ts));height:calc(26px*var(--ts));fill:currentColor}
 .disc svg .cut{fill:none;stroke:var(--count);stroke-width:2.2}
 .disc svg .dot{fill:var(--count)}
 .app[data-mode="video"] .ic-cam{display:none}
 .app:not([data-mode="video"]) .ic-vid{display:none}
 .fxpanel{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--bh) + 14px);width:min(360px,calc(100% - 32px));height:72px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;gap:16px;background:rgba(60,60,64,.94);border-radius:10px;z-index:3;box-shadow:0 6px 24px rgba(0,0,0,.35)}
-.app.has-strip .fxpanel{bottom:calc(var(--bh) + 93px + 14px)}
+.app.has-strip .fxpanel{bottom:calc(var(--bh) + var(--sh) + 14px)}
 .fxpanel .sdot{flex:none;border-radius:50%;background:#fff;display:block}
 .fxpanel .sdot.s{width:10px;height:10px}
 .fxpanel .sdot.b{width:20px;height:20px}
@@ -156,11 +156,11 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .shapepick svg{width:21px;height:21px}
 .settings.pxmenu,.app.has-strip .settings.pxmenu{right:auto;left:14px;width:280px}
 .settings.pxmenu{bottom:calc(var(--bh) + 56px)}
-.app.has-strip .settings.pxmenu{bottom:calc(var(--bh) + 93px + 56px)}
+.app.has-strip .settings.pxmenu{bottom:calc(var(--bh) + var(--sh) + 56px)}
 .tgrid{display:flex;flex-wrap:wrap;gap:4px}
 .qrow{width:100%;background:none;border:0;padding:0;color:inherit;font:inherit;text-shadow:inherit;cursor:pointer;text-align:left}
 .qrow svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:.85;flex:none}
-.settings.qmenu{right:calc(16px + 272px + 8px);width:272px;z-index:4;gap:12px}
+.settings.qmenu{right:calc(16px + calc(272px*var(--ts)) + 8px);width:calc(272px*var(--ts));z-index:4;gap:12px}
 .qprevw{border-radius:8px;overflow:hidden;background:conic-gradient(#3a3a3e 25%,#505055 0 50%,#3a3a3e 0 75%,#505055 0) 0 0/12px 12px;line-height:0}
 .qprevw canvas{width:100%;display:block}
 .cwheel{display:flex;gap:12px;align-items:center;margin-top:4px}
@@ -185,8 +185,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .qdep{display:flex;flex-direction:column;gap:14px}
 .qmenu.qoff .qdep{opacity:.4;pointer-events:none}
 .qsw{display:block;width:19px;height:19px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);margin:auto;box-sizing:border-box}
-@media (max-width:600px){.settings.qmenu{right:10px;width:min(244px,calc(100% - 20px))}.settings.qover:not(.qmenu){visibility:hidden}.settings.qmenu .qback{display:flex}}
-.qmenu .qback{display:none;align-items:center;gap:4px;align-self:flex-start;background:none;border:0;padding:0;margin:-2px 0 -4px;color:inherit;font:inherit;font-size:13px;font-weight:600;text-shadow:inherit;cursor:pointer;opacity:.85}
+@media (max-width:600px){.settings.qmenu{right:10px;width:min(calc(244px*var(--ts)),calc(100% - 20px))}.settings.qover:not(.qmenu){visibility:hidden}.settings.qmenu .qback{display:flex}}
+.qmenu .qback{display:none;align-items:center;gap:4px;align-self:flex-start;background:none;border:0;padding:0;margin:-2px 0 -4px;color:inherit;font:inherit;font-size:calc(13px*var(--ts));font-weight:600;text-shadow:inherit;cursor:pointer;opacity:.85}
 .qmenu .qback svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .tgrid button{width:30px;height:30px;padding:0;border:0;border-radius:8px;background:none;cursor:pointer}
 .fcols{flex-wrap:nowrap;gap:4px}
@@ -196,32 +196,32 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .tintpick button i{display:block;width:19px;height:19px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);margin:auto;box-sizing:border-box}
 .tintpick button.on{background:rgba(255,255,255,.28)}
 .pxhandle{display:none!important;position:absolute;top:0;bottom:var(--bh);width:0;z-index:2;pointer-events:none}
-.app.has-strip .pxhandle{bottom:calc(var(--bh) + 93px)}
+.app.has-strip .pxhandle{bottom:calc(var(--bh) + var(--sh))}
 .pxhandle i{position:absolute;left:-1px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.55);box-shadow:0 0 6px rgba(0,0,0,.35)}
 .pxhandle i::after{content:'';position:absolute;left:-4px;top:50%;width:10px;height:56px;margin-top:-28px;border-radius:5px;background:rgba(255,255,255,.9);box-shadow:0 1px 8px rgba(0,0,0,.4)}
 .shapepick .emo{font-size:17px;line-height:1;font-family:'Noto Color Emoji','Apple Color Emoji','Segoe UI Emoji',sans-serif}
-.app.has-strip .shapebtn,.app.has-strip .shapepick{bottom:calc(var(--bh) + 93px + 14px)}
+.app.has-strip .shapebtn,.app.has-strip .shapepick{bottom:calc(var(--bh) + var(--sh) + 14px)}
 @media (max-width:600px){
-  .app{--bh:88px}
+  .app{--bh:74px;--sh:62px}
   .bar{padding:0 14px}
-  .seg{width:120px}
-  .pill{width:96px;font-size:15px}
-  .shutter,.stopbtn{width:64px;height:64px}
+  .seg{width:calc(120px*var(--bs))}
+  .pill{width:calc(96px*var(--bs));font-size:calc(15px*var(--ts))}
+  .shutter,.stopbtn{width:min(calc(56px*var(--bs)),calc(var(--bh) - 14px));height:min(calc(56px*var(--bs)),calc(var(--bh) - 14px))}
   .countbar .n{width:64px;font-size:40px}
-  .thumb{width:104px;height:70px}
-  .timer{font-size:24px}
+  .thumb{width:calc(88px*var(--hs));height:calc(56px*var(--hs))}
+  .timer{font-size:calc(24px*var(--ts))}
   .pager{gap:14px}
-  .pager .arrow{width:32px}
+  .pager .arrow{width:calc(32px*var(--bs))}
 }
-.pill.half{width:66px;font-size:15px}
-.pill.back{width:88px}
-.pillgrp{display:flex;align-items:stretch;width:148px;height:32px;border-radius:8px;background:var(--pill);overflow:hidden}
+.pill.half{width:calc(66px*var(--bs));font-size:calc(15px*var(--ts))}
+.pill.back{width:calc(88px*var(--bs))}
+.pillgrp{display:flex;align-items:stretch;width:calc(148px*var(--bs));height:calc(32px*var(--bs));border-radius:8px;background:var(--pill);overflow:hidden}
 .pillgrp .pill{background:none;border-radius:0}
 .pillgrp .pill:active{background:rgba(255,255,255,.14)}
 .pillgrp .pill:focus-visible{outline-offset:-2px}
 .pillgrp .pill.half{flex:1;width:auto;height:auto;min-width:0}
-.pill.sq{width:32px;height:32px;flex:none;padding:0;display:grid;place-items:center;box-shadow:inset 1px 0 0 rgba(255,255,255,.34)}
-.pill.sq svg{width:18px;height:18px;fill:currentColor}
+.pill.sq{width:calc(32px*var(--bs));height:calc(32px*var(--bs));flex:none;padding:0;display:grid;place-items:center;box-shadow:inset 1px 0 0 rgba(255,255,255,.34)}
+.pill.sq svg{width:calc(18px*var(--ts));height:calc(18px*var(--ts));fill:currentColor}
 .pillgrp .pill.sq[aria-expanded="true"]{background:rgba(255,255,255,.26)}
 .pvtools{display:flex;align-items:center;gap:2px}
 .iconbtn .chk{display:none}
@@ -233,8 +233,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .pvnav{position:absolute;top:calc((100% - var(--bh))/2);margin-top:-26px;width:52px;height:52px;padding:0;border:0;border-radius:50%;background:rgba(40,40,44,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:3}
 .pvnav.l{left:14px}.pvnav.r{right:14px}
 .pvnav svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.pvcount{position:absolute;top:14px;left:50%;transform:translateX(-50%);padding:4px 12px;border-radius:12px;background:rgba(40,40,44,.55);color:#fff;font-size:13px;font-variant-numeric:tabular-nums;z-index:3;pointer-events:none}
-.toast{position:absolute;top:56px;left:50%;transform:translateX(-50%);max-width:calc(100% - 32px);padding:9px 16px;border-radius:10px;background:rgba(40,40,44,.94);color:#fff;font-size:14px;z-index:6;pointer-events:none;text-align:center}
+.pvcount{position:absolute;top:14px;left:50%;transform:translateX(-50%);padding:4px 12px;border-radius:12px;background:rgba(40,40,44,.55);color:#fff;font-size:calc(13px*var(--ts));font-variant-numeric:tabular-nums;z-index:3;pointer-events:none}
+.toast{position:absolute;top:56px;left:50%;transform:translateX(-50%);max-width:calc(100% - 32px);padding:9px 16px;border-radius:10px;background:rgba(40,40,44,.94);color:#fff;font-size:calc(14px*var(--ts));z-index:6;pointer-events:none;text-align:center}
 .thumb.cur{outline:3px solid #fff;outline-offset:-3px}
 .thumb.new{animation:thumbIn .55s cubic-bezier(.2,.8,.25,1) both;animation-delay:var(--nd,0s)}
 @keyframes thumbIn{from{transform:translateY(-130%)}to{transform:none}}
@@ -248,26 +248,26 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .pvchk[aria-pressed="true"] svg{display:block}
 .thumb .tick svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .thumb.sel .tick{background:var(--pg-on);border-color:var(--pg-on)}
-.settings{position:absolute;right:16px;bottom:calc(var(--bh) + 14px);width:272px;box-sizing:border-box;padding:14px 16px;border-radius:12px;background:linear-gradient(90deg,var(--bar-a),var(--bar-b) 52%,var(--bar-c));-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:1px solid rgba(255,255,255,.28);color:#fff;z-index:3;box-shadow:0 6px 24px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:14px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
-.app.has-strip .settings{bottom:calc(var(--bh) + 93px + 14px)}
+.settings{position:absolute;right:16px;bottom:calc(var(--bh) + 14px);width:calc(272px*var(--ts));box-sizing:border-box;padding:14px 16px;border-radius:12px;background:linear-gradient(90deg,var(--bar-a),var(--bar-b) 52%,var(--bar-c));-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:1px solid rgba(255,255,255,.28);color:#fff;z-index:3;box-shadow:0 6px 24px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:14px;font-size:calc(14px*var(--ts));text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.app.has-strip .settings{bottom:calc(var(--bh) + var(--sh) + 14px)}
 .srow{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .srow.col2{flex-direction:column;align-items:stretch;gap:8px}
 .srow .lbl{font-weight:500}
-.srow .hint{font-size:12px;color:rgba(255,255,255,.92);font-weight:400;margin-left:4px}
+.srow .hint{font-size:calc(12px*var(--ts));color:rgba(255,255,255,.92);font-weight:400;margin-left:4px}
 .switch{flex:none;width:44px;height:26px;border-radius:13px;border:0;padding:0;background:rgba(255,255,255,.25);position:relative;cursor:pointer;transition:background .15s}
 .switch::after{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .switch[aria-checked="true"]{background:#34c759}
 .switch[aria-checked="true"]::after{transform:translateX(18px)}
 .tseg{display:flex;height:30px;background:rgba(0,0,0,.22);border-radius:8px}
-.tseg button{flex:1;border:0;background:none;color:#e6e8f2;border-radius:7px;font-size:14px;cursor:pointer;padding:0;font-variant-numeric:tabular-nums}
+.tseg button{flex:1;border:0;background:none;color:#e6e8f2;border-radius:7px;font-size:calc(14px*var(--ts));cursor:pointer;padding:0;font-variant-numeric:tabular-nums}
 .tseg button.on{background:var(--seg-on);color:#fff}
 @media (max-width:600px){
-  .pill.half{font-size:14px}
-  .pill.back{width:76px}
-  .pillgrp{width:120px}
-  .pill.sq{width:32px}
+  .pill.half{font-size:calc(14px*var(--ts))}
+  .pill.back{width:calc(76px*var(--bs))}
+  .pillgrp{width:calc(120px*var(--bs))}
+  .pill.sq{width:calc(32px*var(--bs))}
   .pvnav{width:44px;height:44px;margin-top:-22px}
-  .settings{right:10px;width:min(244px,calc(100% - 20px))}
+  .settings{right:10px;width:min(calc(244px*var(--ts)),calc(100% - 20px))}
 }
 .gridov{position:absolute;inset:0;pointer-events:none;z-index:1;background-image:linear-gradient(90deg,transparent calc(33.333% - .5px),rgba(255,255,255,.6) calc(33.333% - .5px),rgba(255,255,255,.6) calc(33.333% + .5px),transparent calc(33.333% + .5px),transparent calc(66.666% - .5px),rgba(255,255,255,.6) calc(66.666% - .5px),rgba(255,255,255,.6) calc(66.666% + .5px),transparent calc(66.666% + .5px)),linear-gradient(180deg,transparent calc(33.333% - .5px),rgba(255,255,255,.6) calc(33.333% - .5px),rgba(255,255,255,.6) calc(33.333% + .5px),transparent calc(33.333% + .5px),transparent calc(66.666% - .5px),rgba(255,255,255,.6) calc(66.666% - .5px),rgba(255,255,255,.6) calc(66.666% + .5px),transparent calc(66.666% + .5px));filter:drop-shadow(0 0 1px rgba(0,0,0,.5))}
 .settings{max-height:calc(100% - var(--bh) - 40px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
@@ -278,15 +278,15 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .vsb.on i{display:block}
 .vsb i::before{content:'';position:absolute;top:0;bottom:0;left:-7px;right:-7px}
 .vsb i:hover,.vsb i.drag{width:6px;right:-13px;background:rgba(255,255,255,.88)}
-.app.has-strip .settings{max-height:calc(100% - var(--bh) - 93px - 40px)}
+.app.has-strip .settings{max-height:calc(100% - var(--bh) - var(--sh) - 40px)}
 .settings>*{flex:none}
 .rng{width:100%;margin:0;height:22px;accent-color:#4c8dff;cursor:pointer}
 .srow .hint.val{float:right;font-variant-numeric:tabular-nums}
-.sreset{align-self:flex-start;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:7px;height:28px;padding:0 12px;font-size:13px;cursor:pointer}
+.sreset{align-self:flex-start;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:7px;height:28px;padding:0 12px;font-size:calc(13px*var(--ts));cursor:pointer}
 .sdiv{height:1px;background:rgba(255,255,255,.2)}
-.app.has-strip .preview{bottom:calc(var(--bh) + 93px)}
-.app.has-strip .effects{bottom:calc(var(--bh) + 93px)}
-.app.has-strip .pvnav{top:calc((100% - var(--bh) - 93px)/2)}
+.app.has-strip .preview{bottom:calc(var(--bh) + var(--sh))}
+.app.has-strip .effects{bottom:calc(var(--bh) + var(--sh))}
+.app.has-strip .pvnav{top:calc((100% - var(--bh) - var(--sh))/2)}
 .quad{position:relative;background:#000}
 .quad img{position:absolute;object-fit:fill;transition:transform .5s cubic-bezier(.22,.9,.28,1);will-change:transform}
 .quad img.last{z-index:2}
@@ -314,8 +314,14 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 .app.ar{background:var(--solid)}
 .arseg{display:flex;gap:2px;padding:2px;border-radius:8px;background:rgba(255,255,255,.14)}
-.arseg button{flex:1;border:0;background:none;color:#fff;font-size:12.5px;height:26px;border-radius:6px;cursor:pointer;padding:0 4px;white-space:nowrap}
+.arseg button{flex:1;border:0;background:none;color:#fff;font-size:calc(12.5px*var(--ts));height:26px;border-radius:6px;cursor:pointer;padding:0 4px;white-space:nowrap}
 .arseg button.on{background:rgba(255,255,255,.3)}
+.tseg.scseg{height:34px}
+.scseg button{display:grid;place-items:center}
+.scseg i{display:block;background:currentColor;border-radius:2px}
+.scseg.t i{width:auto;height:auto;background:none;font-style:normal;font-weight:600;line-height:1}
+.scseg.b i{border-radius:3px}
+.scseg.h i{width:16px;border-radius:1.5px}
 .srow.abt{width:100%;border:0;background:none;text-align:left;cursor:pointer;padding:0;color:inherit}
 .about,.tour{--cw:min(540px,calc(100vw - 32px),calc((100vh - 32px)*1.062));--u:calc(var(--cw)/1350)}
 .about{--cw:min(400px,calc(100vw - 32px))}
@@ -464,6 +470,13 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         <div class="srow"><span class="lbl" id="qol">Outer edge</span><button class="switch" id="qosw" type="button" role="switch" aria-checked="true" aria-labelledby="qol"></button></div>
       </div>
     </div>
+    <div class="settings qmenu" id="scmenu" role="dialog" aria-label="Scale" hidden>
+      <button type="button" class="qback" id="scback"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back</button>
+      <div class="srow col2"><span class="lbl">Text size</span><div class="tseg scseg t" data-k="st" role="radiogroup" aria-label="Text size"></div></div>
+      <div class="srow col2"><span class="lbl">Button size</span><div class="tseg scseg b" data-k="sb" role="radiogroup" aria-label="Button size"></div></div>
+      <div class="srow col2"><span class="lbl">Bar height</span><div class="tseg scseg h" data-k="sh" role="radiogroup" aria-label="Bar height"></div></div>
+      <button class="sreset" id="screset" type="button">Reset</button>
+    </div>
     <div class="settings pxmenu" id="glmenu" role="dialog" aria-label="Glow options" hidden>
       <div class="srow col2"><span class="lbl">Glow<span class="hint val" id="gliv">100%</span></span><input class="rng" id="glir" type="range" min="0" max="200" step="1" value="100" aria-label="Glow amount"></div>
       <div class="srow col2"><span class="lbl">Spread<span class="hint val" id="glsv">100%</span></span><input class="rng" id="glsr" type="range" min="40" max="250" step="1" value="100" aria-label="Glow spread"></div>
@@ -496,8 +509,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         </div>
       </div>
     </div>
-    <script type="application/json" id="changelog">{"notes": ["About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again", "Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red", "Welcome tour now follows dark mode", "Welcome, About and update pop-ups: a more moderate size, with the original rounded corners", "Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners", "New welcome tour the first time the installed app is opened", "In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block", "Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy", "Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 90, "notes": ["About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again"]}, {"v": 89, "notes": ["Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red"]}, {"v": 88, "notes": ["Welcome tour now follows dark mode"]}, {"v": 87, "notes": ["Welcome, About and update pop-ups: a more moderate size, with the original rounded corners"]}, {"v": 86, "notes": ["Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners"]}, {"v": 85, "notes": ["New welcome tour the first time the installed app is opened"]}, {"v": 84, "notes": ["In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block"]}, {"v": 83, "notes": ["Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy"]}, {"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><button type="button" class="abhelp" id="abHelp" aria-label="Show the welcome tour" title="Welcome tour">?</button><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v90</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <script type="application/json" id="changelog">{"notes": ["Scale: text size now also scales icons, button size only changes the buttons themselves; the third option is renamed Bar height", "New Scale setting (3-dots menu, above About): choose the text size, button size and bar height from 5 levels each, with a Reset button", "Smaller shutter button that fits the shorter bar", "Shorter bottom bar and filmstrip (buttons keep their original size)", "About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again", "Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red", "Welcome tour now follows dark mode", "Welcome, About and update pop-ups: a more moderate size, with the original rounded corners", "Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners", "New welcome tour the first time the installed app is opened", "In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block", "Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy", "Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 95, "notes": ["Scale: text size now also scales icons, button size only changes the buttons themselves; the third option is renamed Bar height"]}, {"v": 94, "notes": ["New Scale setting (3-dots menu, above About): choose the text size, button size and bar height from 5 levels each, with a Reset button"]}, {"v": 93, "notes": ["Smaller shutter button that fits the shorter bar"]}, {"v": 92, "notes": ["Buttons and labels are back to their original size; the bottom bar and filmstrip stay shorter"]}, {"v": 91, "notes": ["Shorter bottom bar and filmstrip"]}, {"v": 90, "notes": ["About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again"]}, {"v": 89, "notes": ["Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red"]}, {"v": 88, "notes": ["Welcome tour now follows dark mode"]}, {"v": 87, "notes": ["Welcome, About and update pop-ups: a more moderate size, with the original rounded corners"]}, {"v": 86, "notes": ["Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners"]}, {"v": 85, "notes": ["New welcome tour the first time the installed app is opened"]}, {"v": 84, "notes": ["In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block"]}, {"v": 83, "notes": ["Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy"]}, {"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><button type="button" class="abhelp" id="abHelp" aria-label="Show the welcome tour" title="Welcome tour">?</button><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v95</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -541,6 +554,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       <div class="srow col2"><span class="lbl">Contrast<span class="hint val" id="cov">100%</span></span><input class="rng" id="cor" type="range" min="50" max="150" step="1" value="100" aria-label="Contrast"></div>
       <div class="srow col2"><span class="lbl">Saturation<span class="hint val" id="sav">100%</span></span><input class="rng" id="sar" type="range" min="0" max="200" step="1" value="100" aria-label="Saturation"></div>
       <button class="sreset" id="adjreset" type="button">Reset adjustments</button>
+      <button class="srow qrow" id="scrow" type="button" aria-haspopup="true" aria-expanded="false"><span class="lbl">Scale</span><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
       <div class="sdiv"></div>
       <button class="srow abt" id="aboutrow" type="button"><span class="lbl">About</span></button>
     </div>
@@ -625,7 +639,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 (function(){
   var W=1280,H=720;
   var $=function(s){return document.querySelector(s)};
-  ['qmenu','glmenu','pxmenu','pxhandle','fload','pv','pvprev','pvnext','pvcount','pvchk','toast','fxpanel','shapebtn','shapepick','settings','flash'].forEach(function(id){var e=document.getElementById(id);if(e)e.parentNode.parentNode.insertBefore(e,document.getElementById('strip'))});
+  ['qmenu','scmenu','glmenu','pxmenu','pxhandle','fload','pv','pvprev','pvnext','pvcount','pvchk','toast','fxpanel','shapebtn','shapepick','settings','flash'].forEach(function(id){var e=document.getElementById(id);if(e)e.parentNode.parentNode.insertBefore(e,document.getElementById('strip'))});
   var app=$('#app'),vp=$('#vp'),view=$('#view'),vctx=view.getContext('2d'),fxEl=$('#fx'),pv=$('#pv'),strip=$('#strip'),flashEl=$('#flash'),gate=$('#gate'),gateMsg=$('#gateMsg'),allowBtn=$('#allow');
   var src=document.createElement('canvas'),sctx=src.getContext('2d');
 
@@ -634,8 +648,9 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   var QGAP={short:450,default:900,long:1700};
   var QPAL=[['transparent','Transparent'],['#000000','Black'],['#ffffff','White'],['#6750a4','Primary'],['#eaddff','Primary container'],['#625b71','Secondary'],['#e8def8','Secondary container'],['#7d5260','Tertiary'],['#ffd8e4','Tertiary container'],['#b3261e','Error'],['#f9dedc','Error container'],['#386a20','Green'],['#b7f397','Green container'],['#0061a4','Blue'],['#d1e4ff','Blue container'],['#6d5e00','Yellow'],['#ffe084','Yellow container'],['#79747e','Outline']];
   var HEXRE=/^#[0-9a-f]{6}$/;
-  var settings={qa:100,qcust:[],qb:false,qc:'transparent',qt:8,qo:true,qr:0,quad:'default',flash:true,timer:3,grid:false,mirror:true,sound:true,zoom:1,br:0,co:100,sa:100,ar:'dynamic',qman:false,fc:'#ffffff',fcust:[]};
-  try{var sv=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv){if(typeof sv.flash==='boolean')settings.flash=sv.flash;if(typeof sv.fc==='string'&&HEXRE.test(sv.fc))settings.fc=sv.fc;if(Array.isArray(sv.fcust))settings.fcust=sv.fcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).sort(function(a,b){return (b===sv.fc)-(a===sv.fc)}).slice(0,1);if([0,3,5,10].indexOf(sv.timer)>=0)settings.timer=sv.timer;if(QGAP[sv.quad])settings.quad=sv.quad;if(typeof sv.qb==='boolean')settings.qb=sv.qb;if(typeof sv.qo==='boolean')settings.qo=sv.qo;if(typeof sv.qc==='string'&&(sv.qc==='transparent'||HEXRE.test(sv.qc)))settings.qc=sv.qc;if(typeof sv.qa==='number'&&sv.qa>=0&&sv.qa<=100)settings.qa=sv.qa;if(Array.isArray(sv.qcust))settings.qcust=sv.qcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).slice(0,6);if(typeof sv.qt==='number'&&sv.qt>=1&&sv.qt<=40)settings.qt=sv.qt;if(typeof sv.qr==='number'&&sv.qr>=0&&sv.qr<=40)settings.qr=sv.qr;['grid','mirror','sound'].forEach(function(k){if(typeof sv[k]==='boolean')settings[k]=sv[k]});[['zoom',1,3],['br',-100,100],['co',50,150],['sa',0,200]].forEach(function(r){if(typeof sv[r[0]]==='number'&&sv[r[0]]>=r[1]&&sv[r[0]]<=r[2])settings[r[0]]=sv[r[0]]})}}catch(e){}
+  var settings={qa:100,qcust:[],qb:false,qc:'transparent',qt:8,qo:true,qr:0,quad:'default',flash:true,timer:3,grid:false,mirror:true,sound:true,zoom:1,br:0,co:100,sa:100,ar:'dynamic',qman:false,fc:'#ffffff',fcust:[],st:2,sb:2,sh:2};
+  try{var sv=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv){if(typeof sv.flash==='boolean')settings.flash=sv.flash;if(typeof sv.fc==='string'&&HEXRE.test(sv.fc))settings.fc=sv.fc;if(Array.isArray(sv.fcust))settings.fcust=sv.fcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).sort(function(a,b){return (b===sv.fc)-(a===sv.fc)}).slice(0,1);if([0,3,5,10].indexOf(sv.timer)>=0)settings.timer=sv.timer;if(QGAP[sv.quad])settings.quad=sv.quad;if(typeof sv.qb==='boolean')settings.qb=sv.qb;if(typeof sv.qo==='boolean')settings.qo=sv.qo;if(typeof sv.qc==='string'&&(sv.qc==='transparent'||HEXRE.test(sv.qc)))settings.qc=sv.qc;if(typeof sv.qa==='number'&&sv.qa>=0&&sv.qa<=100)settings.qa=sv.qa;if(Array.isArray(sv.qcust))settings.qcust=sv.qcust.filter(function(h){return typeof h==='string'&&HEXRE.test(h)}).slice(0,6);if(typeof sv.qt==='number'&&sv.qt>=1&&sv.qt<=40)settings.qt=sv.qt;if(typeof sv.qr==='number'&&sv.qr>=0&&sv.qr<=40)settings.qr=sv.qr;['grid','mirror','sound'].forEach(function(k){if(typeof sv[k]==='boolean')settings[k]=sv[k]})
+  ;['st','sb','sh'].forEach(function(k){if(typeof sv[k]==='number'&&sv[k]>=0&&sv[k]<=4&&sv[k]%1===0)settings[k]=sv[k]});[['zoom',1,3],['br',-100,100],['co',50,150],['sa',0,200]].forEach(function(r){if(typeof sv[r[0]]==='number'&&sv[r[0]]>=r[1]&&sv[r[0]]<=r[2])settings[r[0]]=sv[r[0]]})}}catch(e){}
   try{var sv2=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv2&&['dynamic','16:9','4:3','1:1'].indexOf(sv2.ar)>=0)settings.ar=sv2.ar}catch(e){}
   try{var sv3=JSON.parse(localStorage.getItem('pb.settings')||'null');if(sv3&&typeof sv3.qman==='boolean')settings.qman=sv3.qman}catch(e){}
 
@@ -974,7 +989,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
       if(!arAnim){vp.style.cssText='';if(state==='effects')fit(true)}
       return;
     }
-    var aw=app.clientWidth,ah=app.clientHeight-92-(hs?93:0),w=aw,h=w/r;
+    var aw=app.clientWidth,ah=app.clientHeight-parseFloat(app.style.getPropertyValue('--bh')||80)-(hs?parseFloat(app.style.getPropertyValue('--sh')||76):0),w=aw,h=w/r;
     if(h>ah){h=ah;w=h*r}
     var n={l:(aw-w)/2,t:(ah-h)/2,w:w,h:h};
     if((chg||ratioChg)&&ok&&(Math.abs(o.w-n.w)>1||Math.abs(o.h-n.h)>1||Math.abs(o.t-n.t)>1||Math.abs(o.l-n.l)>1)){boxGo(o,n);return}
@@ -1604,6 +1619,13 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   $('#dlbtn').addEventListener('click',download);
 
   /* ---------- settings ---------- */
+  var SC={st:[.85,.92,1,1.1,1.2],sb:[.8,.9,1,1.12,1.25],sh:[.8,.9,1,1.1,1.2]};
+  function scLv(k){var v=settings[k];return (typeof v==='number'&&v>=0&&v<=4&&v%1===0)?v:2}
+  function applyScale(){
+    var nar=window.matchMedia&&matchMedia('(max-width:600px)').matches,hs=SC.sh[scLv('sh')],st=app.style;
+    st.setProperty('--ts',SC.st[scLv('st')]);st.setProperty('--bs',SC.sb[scLv('sb')]);st.setProperty('--hs',hs);
+    st.setProperty('--bh',(nar?74:80)*hs+'px');st.setProperty('--sh',(nar?62:76)*hs+'px');
+  }
   function saveSettings(){try{localStorage.setItem('pb.settings',JSON.stringify(settings))}catch(e){}}
   var gridSw=$('#gridsw'),mirSw=$('#mirsw'),sndSw=$('#sndsw'),gridOv=$('#gridov');
   var RNG={zoom:[$('#zoomr'),$('#zoomv'),function(v){return v.toFixed(1)+'×'},100],br:[$('#brr'),$('#brv'),function(v){return (v>0?'+':'')+Math.round(v)},1],co:[$('#cor'),$('#cov'),function(v){return Math.round(v)+'%'},1],sa:[$('#sar'),$('#sav'),function(v){return Math.round(v)+'%'},1]};
@@ -1632,8 +1654,13 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   var qRow=$('#qrow'),qMenu=$('#qmenu'),qPin=false,qT=0;
   var qNar=window.matchMedia?matchMedia('(max-width:600px)'):null;
   /* narrow window: there is no room beside the menu, so the Four Grid panel takes its place instead of covering it */
-  function qShow(o){qMenu.hidden=!o;qRow.setAttribute('aria-expanded',String(o));if(!o)qPin=false;setPop.classList.toggle('qover',!!o&&!!qNar&&qNar.matches)}
-  if(qNar&&qNar.addEventListener)qNar.addEventListener('change',function(){qShow(!qMenu.hidden)});
+  var scRow=$('#scrow'),scMenu=$('#scmenu'),scPin=false,scT=0;
+  function qOver(){setPop.classList.toggle('qover',(!qMenu.hidden||!scMenu.hidden)&&!!qNar&&qNar.matches)}
+  function qRaw(o){qMenu.hidden=!o;qRow.setAttribute('aria-expanded',String(o));if(!o)qPin=false;qOver()}
+  function scRaw(o){scMenu.hidden=!o;scRow.setAttribute('aria-expanded',String(o));if(!o)scPin=false;qOver()}
+  function qShow(o){if(o)scRaw(false);qRaw(o)}
+  function scShow(o){if(o)qRaw(false);scRaw(o)}
+  if(qNar&&qNar.addEventListener)qNar.addEventListener('change',function(){qOver();applyScale();layoutAR()});
   $('#qback').addEventListener('click',function(){qShow(false)});
   function qLater(){clearTimeout(qT);qT=setTimeout(function(){if(!qPin)qShow(false)},260)}
   qRow.addEventListener('mouseenter',function(){if(qNar&&qNar.matches)return;clearTimeout(qT);qShow(true)});
@@ -1641,6 +1668,29 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   qMenu.addEventListener('mouseenter',function(){clearTimeout(qT)});
   qMenu.addEventListener('mouseleave',qLater);
   qRow.addEventListener('click',function(){if(qMenu.hidden){qShow(true);qPin=true}else qPin=!qPin;if(!qPin&&false)qShow(false)});
+  $('#scback').addEventListener('click',function(){scShow(false)});
+  function scLater(){clearTimeout(scT);scT=setTimeout(function(){if(!scPin)scShow(false)},260)}
+  scRow.addEventListener('mouseenter',function(){if(qNar&&qNar.matches)return;clearTimeout(scT);scShow(true)});
+  scRow.addEventListener('mouseleave',scLater);
+  scMenu.addEventListener('mouseenter',function(){clearTimeout(scT)});
+  scMenu.addEventListener('mouseleave',scLater);
+  scRow.addEventListener('click',function(){if(scMenu.hidden){scShow(true);scPin=true}else scPin=!scPin});
+  qRow.addEventListener('mouseenter',function(){clearTimeout(scT)});
+  var scSegs=[].slice.call(scMenu.querySelectorAll('.scseg'));
+  scSegs.forEach(function(g){
+    var k=g.dataset.k,t=g.classList.contains('t'),b=g.classList.contains('b');
+    for(var i=0;i<5;i++){
+      var bt=document.createElement('button');bt.type='button';bt.setAttribute('role','radio');bt.dataset.i=i;
+      var e=document.createElement('i');
+      if(t){e.textContent='A';e.style.fontSize=(10+i*2.6)+'px'}else if(b){var z=9+i*3.2;e.style.width=z+'px';e.style.height=z+'px'}else{e.style.height=(3+i*2.2)+'px'}
+      bt.appendChild(e);bt.setAttribute('aria-label','Level '+(i+1)+' of 5');
+      bt.addEventListener('click',function(){settings[k]=+this.dataset.i;saveSettings();renderScale();applyScale();layoutAR()});
+      g.appendChild(bt);
+    }
+  });
+  function renderScale(){scSegs.forEach(function(g){var l=scLv(g.dataset.k);[].forEach.call(g.children,function(b){var on=+b.dataset.i===l;b.classList.toggle('on',on);b.setAttribute('aria-checked',String(on))})})}
+  $('#screset').addEventListener('click',function(){settings.st=settings.sb=settings.sh=2;saveSettings();renderScale();applyScale();layoutAR()});
+  renderScale();applyScale();
   var qbSw=$('#qbsw'),qoSw=$('#qosw'),qtR=$('#qtr'),qtV=$('#qtv'),qrR=$('#qrr'),qrV=$('#qrv'),qCols=$('#qcolors'),qaR=$('#qar'),qaV=$('#qav');
   qaR.addEventListener('input',function(){settings.qa=100-(+qaR.value);qaV.textContent=qaR.value+'%';saveSettings()});
   var CHK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
@@ -1760,13 +1810,13 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   qoSw.addEventListener('click',function(){settings.qo=!settings.qo;saveSettings();renderQ()});
   qtR.addEventListener('input',function(){settings.qt=+qtR.value;qtV.textContent=settings.qt+' px';saveSettings()});
   qrR.addEventListener('input',function(){settings.qr=+qrR.value;qrV.textContent=settings.qr+' px';saveSettings()});
-  function setOpen(o){if(!o)qShow(false);setPop.hidden=!o;setBtn.setAttribute('aria-expanded',String(o))}
+  function setOpen(o){if(!o){qShow(false);scShow(false)}setPop.hidden=!o;setBtn.setAttribute('aria-expanded',String(o))}
   function closeSettings(){if(setPop&&!setPop.hidden)setOpen(false)}
   setBtn.addEventListener('click',function(){if(state==='idle')setOpen(setPop.hidden)});
   flashSw.addEventListener('click',function(){settings.flash=!settings.flash;saveSettings();renderSettings()});
   qBtns.forEach(function(b){b.addEventListener('click',function(){settings.quad=b.dataset.q;saveSettings();renderSettings()})});
   tBtns.forEach(function(b){b.addEventListener('click',function(){settings.timer=+b.dataset.t;saveSettings();renderSettings()})});
-  document.addEventListener('pointerdown',function(e){if(!setPop.hidden&&!setPop.contains(e.target)&&!qMenu.contains(e.target)&&!setBtn.contains(e.target))closeSettings()});
+  document.addEventListener('pointerdown',function(e){if(!setPop.hidden&&!setPop.contains(e.target)&&!qMenu.contains(e.target)&&!scMenu.contains(e.target)&&!setBtn.contains(e.target))closeSettings()});
   renderSettings();renderQ();
 
   /* thin custom scrollbar for the pop-over menus (replaces the native one) */
