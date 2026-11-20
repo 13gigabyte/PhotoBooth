@@ -72,6 +72,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .app{--bh:80px;--sh:76px;--ts:1;--bs:1;--hs:1;zoom:.85;height:100%;position:relative;overflow:hidden;background:#000}
 .viewport{position:absolute;inset:0;z-index:0;background:#000;overflow:hidden}
 .viewport canvas#view{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.app[data-state="effects"] .viewport{background:transparent}.app[data-state="effects"] canvas#view{visibility:hidden}
 .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:7}
 .flash.go{animation:flash 1.15s linear}
 .flash.hold{opacity:1}
@@ -98,8 +99,9 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .tile span{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:#fff;font-size:calc(clamp(12px,2.2vw,24px)*var(--ts));font-weight:400;text-shadow:0 1px 4px rgba(0,0,0,.85)}
 .tile.sel{outline:3px solid #fff;outline-offset:-3px}
 
-.strip{display:none;position:absolute;left:0;right:0;bottom:var(--bh);z-index:4;height:var(--sh);background:var(--strip);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);padding:0 6px;gap:6px;align-items:center;overflow-x:auto;box-sizing:border-box}
+.strip{display:none;position:absolute;left:0;right:0;bottom:calc(var(--bh) - 1px);z-index:4;height:calc(var(--sh) + 1px);background:var(--strip);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);padding:0 6px;gap:6px;align-items:center;overflow-x:auto;box-sizing:border-box}
 .strip.on{display:flex}
+.app.has-strip .bar{border-top-color:transparent}
 .strip .spacer{flex:1 0 0}
 .thumb{flex:none;width:calc(100px*var(--hs));height:calc(66px*var(--hs));border:0;padding:0;background:#000;position:relative;cursor:pointer;overflow:hidden}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -148,6 +150,15 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .slider .fill{height:100%;width:40%;background:#1f6fe8}
 .slider .knob{position:absolute;top:50%;left:40%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
 .slider:focus-visible{outline:2px solid var(--focus);outline-offset:4px;border-radius:6px}
+.effects .fxghost{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:3px;padding:3px;pointer-events:none;z-index:1}
+.tile.sel{transition:outline-color .3s ease}.effects.leaving .tile.sel,.effects.entering .tile.sel{outline-color:transparent}
+.effects.leaving,.effects.entering{pointer-events:none}
+.pxtip{position:absolute;inset:0 0 var(--bh) 0;z-index:2;pointer-events:none;overflow:hidden}
+.app.has-strip .pxtip{bottom:calc(var(--bh) + var(--sh))}
+.pxtip[hidden]{display:none}
+.pxtip .scrim{position:absolute;inset:0;background:rgba(0,0,0,.34);opacity:0}
+.pxtip .hand{position:absolute;top:52%;left:16%;width:clamp(58px,8.5vw,104px);aspect-ratio:1;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+.pxtip .hand svg{position:absolute;inset:0;width:100%;height:100%;opacity:0;fill:#e8e7ec}
 .shapebtn{position:absolute;left:14px;bottom:calc(var(--bh) + 14px);width:42px;height:32px;padding:0;border-radius:9px;background:linear-gradient(90deg,var(--bar-a),var(--bar-b) 52%,var(--bar-c));-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:1px solid rgba(255,255,255,.28);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:3;box-shadow:0 6px 24px rgba(0,0,0,.35)}
 .shapebtn svg{width:22px;height:22px;fill:currentColor}
 .shapepick{position:absolute;left:64px;bottom:calc(var(--bh) + 14px);min-height:32px;max-width:calc(100% - 78px);box-sizing:border-box;flex-wrap:wrap;display:flex;align-items:center;gap:2px;padding:3px 4px;border-radius:9px;background:linear-gradient(90deg,var(--bar-a),var(--bar-b) 52%,var(--bar-c));-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8);border:1px solid rgba(255,255,255,.28);z-index:3;box-shadow:0 6px 24px rgba(0,0,0,.35)}
@@ -487,13 +498,13 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     </div>
     <div class="settings pxmenu" id="pxmenu" role="dialog" aria-label="Pixel options" hidden>
       <div class="srow col2"><span class="lbl">Pixelation<span class="hint val" id="pxv">29%</span></span><input class="rng" id="pxr" type="range" min="0" max="100" step="1" value="29" aria-label="Pixelation"></div>
-      <div class="srow"><span class="lbl" id="pxdl">Double</span><button class="switch" id="pxdsw" type="button" role="switch" aria-checked="true" aria-labelledby="pxdl"></button></div>
       <div class="srow"><span class="lbl" id="pxgl">Grain</span><button class="switch" id="pxgsw" type="button" role="switch" aria-checked="true" aria-labelledby="pxgl"></button></div>
       <div class="sdiv"></div>
       <div class="srow col2"><span class="lbl">Filter intensity<span class="hint val" id="pxiv">100%</span></span><input class="rng" id="pxir" type="range" min="0" max="100" step="1" value="100" aria-label="Filter intensity"></div>
       <div class="srow col2"><span class="lbl">Filter</span><div class="tgrid tintpick" id="tintpick" role="radiogroup" aria-label="Filter"></div></div>
     </div>
     <div class="pxhandle" id="pxhandle" hidden><i></i></div>
+    <div class="pxtip" id="pxtip" hidden aria-hidden="true"><div class="scrim"></div><div class="hand"><svg class="ho" viewBox="0 0 2048 2048"><path fill-rule="evenodd" d="M1073.0 1920.7C1011.6 1915.8 952.1 1905.2 917.0 1893.0C912.6 1891.5 900.9 1887.4 891.0 1884.0C757.2 1837.5 636.5 1739.2 501.5 1566.6C460.7 1514.5 453.7 1505.0 426.9 1466.4C413.8 1447.3 395.1 1420.3 385.4 1406.4C375.8 1392.4 359.9 1369.3 350.1 1355.0C340.3 1340.7 323.4 1316.3 312.6 1300.7C301.8 1285.1 285.6 1261.7 276.6 1248.7C267.6 1235.7 254.0 1216.0 246.4 1205.0C216.1 1161.1 200.9 1121.4 198.7 1080.0C196.3 1036.4 209.9 997.1 238.9 964.0C257.1 943.1 289.0 919.7 309.0 912.5C312.3 911.3 316.8 909.7 319.0 908.9C340.0 901.2 393.4 903.3 421.5 912.8C473.8 930.6 507.3 955.2 578.6 1027.7C616.0 1065.9 626.4 1074.3 623.1 1063.5C618.5 1049.0 615.8 1038.2 615.1 1032.0C613.6 1017.1 612.1 1004.7 611.2 998.8C610.7 995.3 609.7 986.8 609.0 979.8C608.3 972.7 607.4 964.8 607.0 962.0C606.5 959.2 603.9 938.5 601.0 916.0C588.8 818.2 581.8 764.3 580.0 754.0C578.1 743.8 573.3 707.3 567.1 656.0C566.5 651.0 565.5 643.9 565.0 640.0C563.9 632.8 562.6 621.5 560.9 606.0C559.6 594.3 558.5 585.7 557.2 576.5C556.6 572.4 555.7 565.4 555.1 561.0C554.5 556.6 553.7 549.9 553.2 546.0C552.7 542.1 551.8 534.5 551.2 529.0C550.6 523.5 549.6 516.3 549.0 513.0C548.4 509.7 547.5 502.9 547.0 498.0C546.6 493.1 545.7 484.9 545.2 480.0C544.6 475.1 544.1 468.0 544.1 464.4C544.1 460.8 543.4 456.7 542.6 455.4C541.8 454.1 540.9 450.8 540.6 448.0C540.4 445.2 539.7 438.9 539.2 434.0C536.8 411.0 538.0 376.2 541.7 362.9C542.9 358.4 544.3 352.1 544.7 348.9C545.1 345.6 546.0 341.6 546.6 340.0C547.2 338.4 549.6 331.8 551.8 325.5C571.6 270.4 623.0 228.8 683.2 218.8C733.4 210.6 790.0 219.0 818.0 238.9C823.0 242.4 830.0 246.3 833.6 247.6C841.3 250.2 841.4 250.1 842.8 234.0C844.5 214.3 856.4 181.4 868.4 163.1C880.4 144.8 885.7 138.9 903.1 124.3C920.1 110.0 938.9 98.0 944.2 98.0C945.1 98.0 948.3 97.0 951.4 95.7C954.5 94.5 958.4 93.2 960.0 92.9C961.6 92.7 969.3 91.1 977.0 89.4C1000.0 84.3 1019.4 83.3 1046.1 86.1C1081.5 89.7 1080.9 89.6 1082.0 90.1C1082.5 90.4 1083.9 90.8 1085.0 91.0C1086.1 91.2 1088.3 91.9 1090.0 92.5C1091.7 93.2 1099.3 95.7 1107.0 98.1C1161.3 115.1 1210.1 172.2 1217.1 227.0C1217.5 230.3 1218.3 236.2 1218.8 240.0C1219.3 243.8 1220.0 249.2 1220.4 252.0C1221.2 258.5 1221.7 258.4 1244.0 247.6C1282.6 229.0 1311.4 222.3 1341.8 224.8C1416.3 231.1 1475.2 266.3 1504.1 322.0C1510.9 334.9 1518.1 352.2 1519.2 358.0C1522.3 374.1 1524.1 393.6 1524.0 410.4C1524.0 429.7 1526.3 431.0 1544.4 421.7C1551.3 418.1 1557.8 415.4 1558.7 415.7C1559.7 415.9 1561.5 415.4 1562.7 414.5C1566.3 411.8 1617.6 411.5 1633.0 414.0C1640.7 415.3 1648.8 416.6 1651.0 416.9C1653.2 417.2 1656.3 418.0 1658.0 418.7C1659.7 419.4 1666.3 421.8 1672.8 424.0C1702.0 433.9 1728.5 455.3 1748.3 485.0C1759.4 501.6 1767.1 518.0 1766.3 523.3C1766.1 524.6 1766.8 526.2 1767.9 526.9C1768.9 527.6 1769.4 529.4 1768.8 530.9C1768.2 532.4 1768.7 534.2 1769.9 534.9C1771.1 535.7 1771.6 537.1 1771.0 538.0C1770.4 539.0 1770.9 544.1 1772.1 549.4C1773.4 554.7 1774.7 562.1 1775.1 566.0C1778.5 598.5 1778.5 599.1 1776.6 644.0C1775.4 673.1 1774.2 717.1 1772.5 790.0C1772.0 811.5 1771.1 847.0 1770.5 869.0C1769.9 891.0 1769.0 930.1 1768.5 956.0C1767.9 981.9 1767.1 1017.4 1766.6 1035.0C1766.1 1052.6 1765.2 1083.7 1764.7 1104.0C1761.4 1242.8 1759.9 1281.7 1756.8 1309.0C1756.2 1314.5 1755.4 1323.0 1755.0 1328.0C1752.8 1356.2 1752.0 1362.3 1747.0 1393.0C1738.8 1443.5 1721.1 1508.4 1706.0 1543.0C1702.5 1550.9 1696.5 1565.2 1692.8 1574.0C1678.8 1608.2 1647.2 1660.7 1620.8 1694.0C1588.3 1734.9 1584.4 1739.3 1562.8 1759.7C1540.6 1780.7 1490.6 1819.5 1469.0 1832.4C1452.3 1842.5 1398.4 1868.5 1379.0 1876.0C1319.2 1898.9 1275.5 1910.1 1218.0 1917.1C1192.2 1920.2 1096.5 1922.6 1073.0 1920.7ZM1189.2 1822.0C1314.5 1812.1 1413.6 1771.8 1491.9 1698.7C1592.1 1605.2 1642.9 1482.7 1657.9 1298.0C1660.3 1269.0 1663.1 1183.3 1666.0 1053.0C1667.1 1002.4 1668.9 940.3 1670.0 915.0C1684.7 572.0 1684.3 562.7 1655.5 532.7C1637.5 513.9 1629.5 511.0 1595.0 511.0C1571.6 511.0 1565.9 511.6 1560.3 514.7C1541.7 524.8 1524.4 548.8 1520.2 570.0C1519.0 576.0 1516.7 633.2 1515.1 697.0C1511.0 853.7 1508.2 925.2 1505.8 936.0C1503.5 946.2 1493.2 958.2 1482.0 963.9C1459.3 975.4 1429.0 966.4 1420.0 945.7C1415.5 935.2 1415.5 935.2 1418.3 747.1C1421.9 498.3 1421.9 402.5 1418.2 388.0C1401.9 323.4 1316.0 300.4 1266.5 347.5C1254.7 358.6 1247.3 372.5 1241.7 393.7C1237.8 408.5 1237.7 412.7 1238.9 529.0C1239.7 595.0 1241.1 669.2 1242.2 694.0C1243.2 718.8 1244.6 782.5 1245.3 835.6L1246.6 932.2L1235.8 942.3C1212.9 963.6 1195.4 965.6 1172.8 949.6C1154.5 936.6 1153.0 929.7 1149.9 845.0C1146.8 758.5 1142.3 653.0 1140.0 611.0C1136.2 540.6 1130.1 409.4 1128.0 352.0C1125.4 280.0 1124.4 268.0 1119.5 252.0C1110.0 220.9 1094.1 200.6 1070.6 189.4C1058.1 183.5 1055.1 183.0 1032.7 182.3C995.3 181.2 977.5 188.1 959.6 210.6C936.4 239.9 935.1 255.5 945.1 383.0C954.0 497.9 958.7 564.2 965.0 666.0C972.4 786.6 974.6 821.1 978.3 875.2C981.0 912.8 980.6 915.0 969.8 930.0C961.6 941.3 951.2 946.0 934.4 946.0C900.4 946.0 888.6 932.6 883.1 887.9C876.3 833.2 873.6 813.4 868.0 777.0C861.5 734.5 856.1 690.1 842.9 573.0C834.9 501.9 829.5 462.8 818.7 398.0C808.6 337.5 783.1 314.0 727.3 314.0C696.5 314.0 680.6 320.8 660.6 342.7C645.3 359.5 638.0 380.6 638.0 408.3C638.0 422.8 653.2 548.3 662.9 614.0C666.8 639.9 674.9 702.0 681.0 752.0C699.0 899.7 700.1 908.0 704.0 930.4C706.1 942.2 709.3 962.9 711.0 976.4C712.7 989.9 715.4 1010.0 717.0 1021.0C737.1 1161.5 743.5 1247.4 734.9 1261.9C726.0 1277.2 698.5 1284.0 677.7 1276.1C665.2 1271.4 657.9 1263.6 605.0 1198.9C577.6 1165.4 564.2 1150.6 520.0 1105.0C440.5 1023.1 410.4 1002.4 367.0 999.7C360.2 999.2 336.1 1004.8 331.1 1008.0C295.7 1030.0 286.4 1076.1 308.3 1120.8C314.0 1132.5 358.0 1199.0 395.0 1252.0C405.4 1266.8 424.5 1294.6 437.4 1313.7C471.7 1364.1 522.2 1437.0 533.4 1452.0C538.7 1459.1 550.2 1474.9 559.0 1487.1C605.2 1550.8 666.6 1621.6 713.3 1665.0C818.4 1762.8 924.4 1810.5 1061.4 1821.8C1090.4 1824.2 1159.7 1824.3 1189.2 1822.0ZM988.9 1560.2C978.2 1555.4 968.8 1543.7 966.2 1532.2C965.0 1527.1 954.5 1449.2 942.8 1359.0C923.7 1212.4 921.7 1194.0 923.8 1186.0C933.6 1149.4 980.8 1144.6 998.2 1178.5C1003.0 1187.9 1046.9 1518.4 1044.9 1530.3C1040.6 1556.2 1012.7 1571.1 988.9 1560.2ZM1367.0 1552.7C1352.5 1545.0 1344.1 1531.6 1344.1 1516.0C1344.0 1495.1 1377.9 1178.0 1381.0 1170.6C1396.4 1133.7 1453.1 1140.9 1457.4 1180.3C1458.8 1193.3 1424.5 1522.9 1420.8 1531.7C1412.3 1552.1 1385.6 1562.5 1367.0 1552.7ZM1174.9 1549.2C1166.5 1545.5 1154.4 1530.9 1152.5 1522.2C1151.7 1518.2 1151.0 1436.2 1151.0 1340.0C1151.0 1175.7 1151.2 1164.4 1154.6 1155.6C1167.2 1123.1 1211.6 1121.4 1227.0 1152.9C1232.1 1163.2 1232.1 1163.2 1231.5 1344.4C1231.0 1525.7 1231.0 1525.7 1224.9 1534.3C1213.7 1550.3 1192.1 1556.7 1174.9 1549.2Z"/></svg><svg class="hf" viewBox="0 0 2048 2048"><path fill-rule="evenodd" d="M1062.0 1915.1C1012.3 1908.9 1003.5 1907.5 975.0 1901.8C928.3 1892.3 921.2 1890.5 886.8 1879.0C782.7 1844.3 705.0 1796.7 622.3 1717.0C524.6 1623.0 458.7 1502.0 432.1 1368.0C425.7 1335.9 424.6 1322.6 424.5 1276.0C424.4 1197.9 433.7 1154.2 460.3 1108.3C496.4 1046.2 570.0 1012.4 626.9 1032.0C634.1 1034.4 639.5 1035.3 640.6 1034.2C641.7 1033.1 640.8 1021.9 638.3 1005.7C619.8 887.4 619.9 819.8 638.7 775.9C667.4 709.0 726.4 672.9 807.0 673.2C846.9 673.3 873.7 681.4 896.4 700.2C901.5 704.5 906.6 708.0 907.6 708.0C908.7 708.0 910.1 709.4 910.8 711.1C912.6 716.0 915.0 713.2 924.1 695.5C956.1 633.1 1016.2 602.9 1094.4 609.9C1122.0 612.4 1153.6 621.8 1172.7 633.4C1189.7 643.7 1215.6 670.0 1224.7 686.3C1234.0 703.0 1234.7 703.2 1249.2 694.2C1275.6 677.5 1297.4 672.0 1337.0 672.0C1415.1 672.0 1477.2 717.4 1501.9 792.5C1506.7 807.2 1509.6 809.0 1517.0 802.0C1523.5 795.9 1546.5 790.0 1569.0 788.7C1610.9 786.2 1654.6 804.7 1683.8 837.3C1725.4 883.7 1752.5 968.5 1761.8 1081.0C1767.0 1143.7 1763.3 1277.1 1755.1 1326.0C1743.5 1394.7 1739.1 1418.1 1733.7 1440.0C1688.1 1626.3 1591.5 1762.5 1446.6 1844.7C1390.7 1876.4 1320.8 1898.9 1240.0 1911.3C1199.4 1917.6 1098.7 1919.7 1062.0 1915.1ZM1205.0 1819.0C1244.1 1814.9 1268.0 1810.9 1295.0 1803.9C1482.6 1755.1 1600.5 1615.7 1646.6 1388.0C1672.7 1259.8 1671.2 1037.0 1643.8 955.2C1624.4 897.1 1587.8 870.9 1547.2 886.1C1528.6 893.0 1519.1 907.3 1513.1 937.0C1506.5 969.6 1504.2 975.2 1494.0 984.8C1475.5 1002.1 1448.1 999.8 1427.7 979.2C1420.1 971.6 1419.8 969.2 1418.8 902.0C1417.8 833.0 1416.4 821.9 1407.0 805.0C1381.3 758.9 1315.6 749.4 1279.4 786.6C1258.0 808.5 1254.1 824.4 1254.0 889.0C1254.0 938.1 1252.8 946.8 1244.5 957.7C1230.4 976.5 1192.8 977.8 1176.0 960.2C1165.1 948.8 1164.3 942.0 1163.0 856.0C1161.8 774.8 1160.4 758.0 1153.7 745.0C1137.8 714.0 1111.8 700.8 1070.1 702.4C1037.2 703.7 1017.6 716.1 1002.9 745.1C993.3 764.0 992.7 770.8 992.2 864.0C991.9 929.3 991.7 933.4 987.7 941.5C976.5 964.8 945.3 972.2 922.4 957.1C906.8 946.7 903.1 934.9 900.9 889.0C897.6 815.2 887.7 790.6 854.9 774.0C832.3 762.5 789.6 763.0 766.0 775.1C733.5 791.6 716.1 828.0 718.7 873.6C719.4 885.0 720.3 894.9 720.7 895.6C721.2 896.4 722.2 903.3 722.9 911.0C725.5 937.9 726.1 943.0 727.0 950.0C727.5 953.9 728.5 961.5 729.1 967.0C729.7 972.5 731.0 983.8 732.1 992.0C733.1 1000.2 734.4 1012.0 735.0 1018.0C735.7 1024.0 737.9 1041.2 740.0 1056.0C742.1 1070.8 744.4 1090.2 745.0 1098.9C745.7 1107.7 746.6 1115.3 746.9 1115.9C747.3 1116.5 748.1 1122.0 748.8 1128.0C752.3 1160.1 753.9 1176.6 755.0 1191.0C755.7 1199.8 757.0 1210.2 757.8 1214.2C763.5 1239.8 758.9 1269.0 747.6 1279.3C728.8 1296.4 698.5 1296.0 681.5 1278.5C673.0 1269.7 670.3 1261.0 663.1 1220.0C649.3 1140.8 633.8 1120.3 591.4 1124.7C543.4 1129.8 517.5 1191.1 520.6 1293.0C525.5 1458.9 609.7 1610.3 753.0 1711.2C813.4 1753.7 880.7 1783.1 963.0 1803.0C1041.5 1822.0 1124.8 1827.5 1205.0 1819.0ZM988.9 1560.2C978.2 1555.4 968.8 1543.7 966.2 1532.2C965.0 1527.1 954.5 1449.2 942.8 1359.0C923.7 1212.4 921.7 1194.0 923.8 1186.0C933.6 1149.4 980.8 1144.6 998.2 1178.5C1003.0 1187.9 1046.9 1518.4 1044.9 1530.3C1040.6 1556.2 1012.7 1571.1 988.9 1560.2ZM1367.0 1552.7C1352.5 1545.0 1344.1 1531.6 1344.1 1516.0C1344.0 1495.1 1377.9 1178.0 1381.0 1170.6C1396.4 1133.7 1453.1 1140.9 1457.4 1180.3C1458.8 1193.3 1424.5 1522.9 1420.8 1531.7C1412.3 1552.1 1385.6 1562.5 1367.0 1552.7ZM1174.9 1549.2C1166.5 1545.5 1154.4 1530.9 1152.5 1522.2C1151.7 1518.2 1151.0 1436.2 1151.0 1340.0C1151.0 1175.7 1151.2 1164.4 1154.6 1155.6C1167.2 1123.1 1211.6 1121.4 1227.0 1152.9C1232.1 1163.2 1232.1 1163.2 1231.5 1344.4C1231.0 1525.7 1231.0 1525.7 1224.9 1534.3C1213.7 1550.3 1192.1 1556.7 1174.9 1549.2Z"/></svg></div></div>
     <div class="fload" id="fload" role="status" hidden><i></i><span>Loading face tracking…</span></div>
     <div class="preview" id="pv" hidden></div>
     <button class="pvnav l" id="pvprev" type="button" aria-label="Previous photo" hidden><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
@@ -512,8 +523,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         </div>
       </div>
     </div>
-    <script type="application/json" id="changelog">{"notes": ["Mode switcher colour: icons stay white whenever they can (the colour is deepened a touch if needed); only very light flash colours switch to a soft dark icon instead of black", "Four Grid manual mode: the step buttons, dots and countdown numbers now follow the Scale settings", "Four Grid manual mode: only the active shutter can be clicked in the middle safe area; click the red areas on either side to stop", "The selected button in the mode switcher now uses your flash colour (white keeps the default blue) and its icon adapts for contrast", "Lovestruck now looks like the Gemini version: a tight arc of smaller hearts hugging the top of the forehead and head, tilting with your head, then floating up and fading", "Lovestruck icons now come out from above the forehead (a clear gap over the head instead of sitting on its edge) and are sharper", "Fixed the freeze when opening the face effects page: all the face-tracking work is now prepared on the Opening PhotoBooth screen, so the page opens smoothly", "Lovestruck now matches the reference more closely: a crown of bigger, brighter hearts sits right above the forehead and follows the shape (and tilt) of each head", "Lovestruck hearts now pop out above the forehead and curve outward along the shape of the head (like the reference), then rise and fade", "All face effects (Space Alien, Nose Twirl, Chipmunk, Lovestruck, Dizzy, Blockhead, Bug Out) now work on several faces at once", "Fixed aspect ratios (16:9, 4:3, 1:1) now have a solid light/dark grey bottom bar again instead of the gradient", "Scale: text size now also scales icons, button size only changes the buttons themselves; the third option is renamed Bar height", "New Scale setting (3-dots menu, above About): choose the text size, button size and bar height from 5 levels each, with a Reset button", "Smaller shutter button that fits the shorter bar", "Shorter bottom bar and filmstrip (buttons keep their original size)", "About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again", "Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red", "Welcome tour now follows dark mode", "Welcome, About and update pop-ups: a more moderate size, with the original rounded corners", "Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners", "New welcome tour the first time the installed app is opened", "In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block", "Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy", "Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 102, "notes": ["Mode switcher colour: icons stay white whenever they can (the colour is deepened a touch if needed); only very light flash colours switch to a soft dark icon instead of black"]}, {"v": 101, "notes": ["Four Grid manual mode: the step buttons, dots and countdown numbers now follow the Scale settings", "Four Grid manual mode: only the active shutter can be clicked in the middle safe area; click the red areas on either side to stop", "The selected button in the mode switcher now uses your flash colour (white keeps the default blue) and its icon adapts for contrast"]}, {"v": 100, "notes": ["Lovestruck now looks like the Gemini version: a tight arc of smaller hearts hugging the top of the forehead and head, tilting with your head, then floating up and fading"]}, {"v": 99, "notes": ["Lovestruck icons now come out from above the forehead (a clear gap over the head instead of sitting on its edge) and are sharper", "Fixed the freeze when opening the face effects page: all the face-tracking work is now prepared on the Opening PhotoBooth screen, so the page opens smoothly"]}, {"v": 98, "notes": ["Lovestruck now matches the reference more closely: a crown of bigger, brighter hearts sits right above the forehead and follows the shape (and tilt) of each head"]}, {"v": 97, "notes": ["Lovestruck hearts now pop out above the forehead and curve outward along the shape of the head (like the reference), then rise and fade", "All face effects (Space Alien, Nose Twirl, Chipmunk, Lovestruck, Dizzy, Blockhead, Bug Out) now work on several faces at once"]}, {"v": 96, "notes": ["Fixed aspect ratios (16:9, 4:3, 1:1) now have a solid light/dark grey bottom bar again instead of the gradient"]}, {"v": 95, "notes": ["Scale: text size now also scales icons, button size only changes the buttons themselves; the third option is renamed Bar height"]}, {"v": 94, "notes": ["New Scale setting (3-dots menu, above About): choose the text size, button size and bar height from 5 levels each, with a Reset button"]}, {"v": 93, "notes": ["Smaller shutter button that fits the shorter bar"]}, {"v": 92, "notes": ["Buttons and labels are back to their original size; the bottom bar and filmstrip stay shorter"]}, {"v": 91, "notes": ["Shorter bottom bar and filmstrip"]}, {"v": 90, "notes": ["About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again"]}, {"v": 89, "notes": ["Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red"]}, {"v": 88, "notes": ["Welcome tour now follows dark mode"]}, {"v": 87, "notes": ["Welcome, About and update pop-ups: a more moderate size, with the original rounded corners"]}, {"v": 86, "notes": ["Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners"]}, {"v": 85, "notes": ["New welcome tour the first time the installed app is opened"]}, {"v": 84, "notes": ["In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block"]}, {"v": 83, "notes": ["Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy"]}, {"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
-    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><button type="button" class="abhelp" id="abHelp" aria-label="Show the welcome tour" title="Welcome tour">?</button><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v102</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
+    <script type="application/json" id="changelog">{"notes": ["Fixed the effects page glitch: the 9 previews were first drawn for the old (letterboxed) box, so they showed zoomed in and then suddenly popped to the right crop a moment later - they are now drawn at the correct size from the very first frame (this showed on fixed aspect ratios)", "Effects page: the camera zooms in + fades out while the page zooms in + fades in; picking an effect reverses it (page zooms out + fades out, camera zooms out + fades in) - far less ghosting", "Aspect-ratio change dissolve refined (slower, eased, in step with the box)", "Dizzy: the birds now wrap around the head - big ones in front flying right, small ones behind flying left", "Going into the effects page, and picking an effect, is now a simple zoom + fade", "Changing the aspect ratio (or resizing) with Pixel, Comic Book and other effects now dissolves smoothly instead of visibly refreshing", "Dizzy rebuilt to match Photo Booth: eight small birds flying round a wide, flat ellipse at the hairline, the ones at the back much smaller than the ones at the front", "Pixel tip is back to the original animation; its dark overlay now covers the whole viewer (it used to stop short above the bottom bar)", "Opening the effects page no longer shows a ghost of the preview behind the tiles: the tiles come in over the picture quickly and cleanly", "Dizzy: birds are now evenly spaced and fly at different heights, so they no longer pile up or leave big gaps", "Resizing the window no longer confuses the effects animation: it always flies from and to the real, current size of the viewer and the effect tiles resize with the window", "The camera picture now mixes straight into the effects grid (and back out) instead of fading through black, and the effect previews are a little sharper", "Dizzy: the blue birds now circle clearly above your head instead of on your forehead", "Pixel tip now plays like the reference: a quick grab and drag, a longer look at the sharp side, then back - with a bigger hand", "Downloading several photos or movies now saves them one by one as separate files instead of a ZIP", "Movies are now saved as MP4 (older clips are converted to MP4 when you download them)", "Effects transition fixed for every aspect ratio: a real copy of the live picture now flies between the viewer and the tile (no more zoom jump when it lands, no overlapping previews), at the original speed", "Smoother effects transitions: the preview now zooms into and out of the tile of the effect you are actually using (opening on that effect's page) without stretching, and page slides no longer hitch", "Pixel is now where Retro used to be: it opens as one pixelated preview, and you can drag left or right to split it into pixelated and normal previews (or drag all the way to hide one). A quick hand tip shows how every time you open it", "Frog is back (bulging eyes and a wide stretched mouth) in the old Pixel spot", "Dizzy now has little blue birds circling above your head, just like the original, and it works with several faces", "Switching effect pages now slides smoothly, and opening or closing the effects screen zooms the preview into and out of the middle tile", "Your camera roll is now saved on this device, so photos and movies are still there after you close and reopen PhotoBooth", "Removed the thin gap line between the camera roll and the bottom bar", "Mode switcher colour: icons stay white whenever they can (the colour is deepened a touch if needed); only very light flash colours switch to a soft dark icon instead of black", "Four Grid manual mode: the step buttons, dots and countdown numbers now follow the Scale settings", "Four Grid manual mode: only the active shutter can be clicked in the middle safe area; click the red areas on either side to stop", "The selected button in the mode switcher now uses your flash colour (white keeps the default blue) and its icon adapts for contrast", "Lovestruck now looks like the Gemini version: a tight arc of smaller hearts hugging the top of the forehead and head, tilting with your head, then floating up and fading", "Lovestruck icons now come out from above the forehead (a clear gap over the head instead of sitting on its edge) and are sharper", "Fixed the freeze when opening the face effects page: all the face-tracking work is now prepared on the Opening PhotoBooth screen, so the page opens smoothly", "Lovestruck now matches the reference more closely: a crown of bigger, brighter hearts sits right above the forehead and follows the shape (and tilt) of each head", "Lovestruck hearts now pop out above the forehead and curve outward along the shape of the head (like the reference), then rise and fade", "All face effects (Space Alien, Nose Twirl, Chipmunk, Lovestruck, Dizzy, Blockhead, Bug Out) now work on several faces at once", "Fixed aspect ratios (16:9, 4:3, 1:1) now have a solid light/dark grey bottom bar again instead of the gradient", "Scale: text size now also scales icons, button size only changes the buttons themselves; the third option is renamed Bar height", "New Scale setting (3-dots menu, above About): choose the text size, button size and bar height from 5 levels each, with a Reset button", "Smaller shutter button that fits the shorter bar", "Shorter bottom bar and filmstrip (buttons keep their original size)", "About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again", "Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red", "Welcome tour now follows dark mode", "Welcome, About and update pop-ups: a more moderate size, with the original rounded corners", "Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners", "New welcome tour the first time the installed app is opened", "In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block", "Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy", "Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button", "Fixed the filmstrip scrollbar showing on top of the flash", "Fixed the camera randomly zooming in when the room is dark", "Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"], "log": [{"v": 102, "notes": ["Mode switcher colour: icons stay white whenever they can (the colour is deepened a touch if needed); only very light flash colours switch to a soft dark icon instead of black"]}, {"v": 101, "notes": ["Four Grid manual mode: the step buttons, dots and countdown numbers now follow the Scale settings", "Four Grid manual mode: only the active shutter can be clicked in the middle safe area; click the red areas on either side to stop", "The selected button in the mode switcher now uses your flash colour (white keeps the default blue) and its icon adapts for contrast"]}, {"v": 100, "notes": ["Lovestruck now looks like the Gemini version: a tight arc of smaller hearts hugging the top of the forehead and head, tilting with your head, then floating up and fading"]}, {"v": 99, "notes": ["Lovestruck icons now come out from above the forehead (a clear gap over the head instead of sitting on its edge) and are sharper", "Fixed the freeze when opening the face effects page: all the face-tracking work is now prepared on the Opening PhotoBooth screen, so the page opens smoothly"]}, {"v": 98, "notes": ["Lovestruck now matches the reference more closely: a crown of bigger, brighter hearts sits right above the forehead and follows the shape (and tilt) of each head"]}, {"v": 97, "notes": ["Lovestruck hearts now pop out above the forehead and curve outward along the shape of the head (like the reference), then rise and fade", "All face effects (Space Alien, Nose Twirl, Chipmunk, Lovestruck, Dizzy, Blockhead, Bug Out) now work on several faces at once"]}, {"v": 96, "notes": ["Fixed aspect ratios (16:9, 4:3, 1:1) now have a solid light/dark grey bottom bar again instead of the gradient"]}, {"v": 95, "notes": ["Scale: text size now also scales icons, button size only changes the buttons themselves; the third option is renamed Bar height"]}, {"v": 94, "notes": ["New Scale setting (3-dots menu, above About): choose the text size, button size and bar height from 5 levels each, with a Reset button"]}, {"v": 93, "notes": ["Smaller shutter button that fits the shorter bar"]}, {"v": 92, "notes": ["Buttons and labels are back to their original size; the bottom bar and filmstrip stay shorter"]}, {"v": 91, "notes": ["Shorter bottom bar and filmstrip"]}, {"v": 90, "notes": ["About pop-up is smaller (same rounded corners as the welcome tour)", "Removed the outline around the welcome tour picture", "Removed the mirrored picture under the bottom bar: it blurs the normal background again"]}, {"v": 89, "notes": ["Fixed the welcome tour text colours in light mode; its button now uses PhotoBooth's red"]}, {"v": 88, "notes": ["Welcome tour now follows dark mode"]}, {"v": 87, "notes": ["Welcome, About and update pop-ups: a more moderate size, with the original rounded corners"]}, {"v": 86, "notes": ["Welcome tour is bigger, waits for camera access (or an image) before appearing, and can be reopened with the ? button in About", "About and update pop-ups now match the welcome tour's size and rounded corners"]}, {"v": 85, "notes": ["New welcome tour the first time the installed app is opened"]}, {"v": 84, "notes": ["In 16:9, 4:3 and 1:1 the bottom bar and filmstrip now blur a mirrored copy of the picture's bottom edge, instead of a flat grey block"]}, {"v": 83, "notes": ["Flash colour: only one custom colour is kept (picking a new one replaces it), so the menu stays tidy"]}, {"v": 82, "notes": ["Four Grid settings no longer cover the 3-dots menu in a narrow window: it now takes its place, with a Back button"]}, {"v": 81, "notes": ["Fixed the filmstrip scrollbar showing on top of the flash"]}, {"v": 80, "notes": ["Fixed the camera randomly zooming in when the room is dark"]}, {"v": 79, "notes": ["Smooth transition when switching aspect ratios (16:9, 4:3, 1:1, Follow)", "Fixed the jump/flicker when opening or leaving Effects, especially in 16:9"]}]}</script>
+    <div class="about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutT"><div class="about-in"><button type="button" class="abhelp" id="abHelp" aria-label="Show the welcome tour" title="Welcome tour">?</button><img id="aboutImg" alt="" width="84" height="84"><h2 id="aboutT">PhotoBooth <small>v110</small></h2><div class="by">@13gigabyte</div><div class="updst" id="aboutSt" hidden></div><button type="button" id="aboutUpd" class="upd" hidden>Check for Update</button><button type="button" id="aboutDone">Done</button></div></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <div class="gridov" id="gridov" hidden></div>
     <div class="flash" id="flash"></div>
@@ -659,9 +670,9 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
   /* ---------- effects catalogue (ids match the shader) ---------- */
   var NAMES={0:'Normal',1:'Bulge',2:'Dent',3:'Twirl',4:'Squeeze',5:'Mirror',6:'Light Tunnel',7:'Fish Eye',8:'Stretch',
-    9:'Sepia',10:'Black And White',11:'Plastic Camera',12:'Comic Book',13:'Retro',14:'Glow',15:'Thermal Camera',16:'X-Ray',
-    17:'Space Alien',18:'Nose Twirl',19:'Chipmunk',20:'Lovestruck',21:'Dizzy',22:'Blockhead',23:'Bug Out',24:'Pixel'};
-  var PAGES=[[17,18,19,20,0,21,22,23,24],[9,10,11,12,0,13,14,15,16],[1,2,3,4,0,5,6,7,8]];
+    9:'Sepia',10:'Black And White',11:'Plastic Camera',12:'Comic Book',14:'Glow',15:'Thermal Camera',16:'X-Ray',
+    17:'Space Alien',18:'Nose Twirl',19:'Chipmunk',20:'Lovestruck',21:'Dizzy',22:'Blockhead',23:'Bug Out',24:'Pixel',25:'Frog'};
+  var PAGES=[[17,18,19,20,0,21,22,23,25],[9,10,11,12,0,24,14,15,16],[1,2,3,4,0,5,6,7,8]];
 
   /* ---------- WebGL effects renderer ---------- */
   var VS='attribute vec2 aPos;varying vec2 vUv;void main(){vUv=aPos*0.5+0.5;gl_Position=vec4(aPos,0.0,1.0);}';
@@ -701,6 +712,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 'float sdUC(vec2 p,float r1,float r2,float h){p.x=abs(p.x);float b=(r1-r2)/h;float a=sqrt(1.0-b*b);float k=dot(p,vec2(-b,a));if(k<0.0)return length(p)-r1;if(k>a*h)return length(p-vec2(0.0,h))-r2;return dot(p,vec2(a,b))-r1;}',
 'float sdAnger(vec2 p){float r=1000.0;for(int k=0;k<4;k++){vec2 q=rot(p,0.7854+1.5708*float(k));q.x+=0.35*q.y*q.y;q.y-=0.12;r=min(r,sdUC(q,0.02,0.2,0.78));}return r;}',
 'float sdNote(vec2 p){vec2 q=rot(p-vec2(-0.28,-0.55),-0.4);float h=(length(q/vec2(0.36,0.25))-1.0)*0.25;float st=sdSeg(p,vec2(0.04,-0.45),vec2(0.04,0.82))-0.075;float fl=min(sdSeg(p,vec2(0.04,0.82),vec2(0.34,0.55)),sdSeg(p,vec2(0.34,0.55),vec2(0.42,0.2)))-0.085;return min(h,min(st,fl));}',
+'float smin(float a,float b,float k){float h=clamp(0.5+0.5*(b-a)/k,0.0,1.0);return mix(b,a,h)-k*h*(1.0-h);}',
 'float heart(vec2 p){p.y=-p.y+0.25;float a=p.x*p.x+p.y*p.y-1.0;return a*a*a-p.x*p.x*p.y*p.y*p.y;}',
 'void main(){',
 ' asp=vec2(uAspect,1.0);',
@@ -730,9 +742,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 '  col=mix(c,b,0.5)+b*0.5*uGl.x;}',
 ' else if(f<15.5){float l=lum(tex(q));l=clamp((l-0.1)*1.5,0.0,1.0);col=jet(l);}',
 ' else if(f<16.5){float l=lum(tex(q));float x=pow(clamp(1.0-l,0.0,1.0),2.2);x=clamp((x-0.05)*1.25,0.0,1.0);col=vec3(x*0.8,x,x);}',
-' else if(f<23.5){',
+' else if(f<23.5||(f>24.5&&f<25.5)){',
 '  vec2 qa=q0;',
-'  if(f>20.5&&f<21.5)qa+=0.01*vec2(sin(qa.y*38.0+uTime*7.0),cos(qa.x*38.0+uTime*7.0));',
 '  col=tex(q0);',
 '  for(int k=0;k<4;k++){',
 '   if(float(k)>uNF-0.5)break;',
@@ -778,12 +789,61 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 '     }',
 '    }',
 '   }',
-'   else if(f<21.5){qn=twirl(qn,C,1.6*F,0.9*sin(uTime*2.5));}',
+'   else if(f<21.5){',
+'    if(length((q0-C)*asp)<2.2*F){',
+'     vec2 evb=(ER-EL)*asp;float rlb=atan(evb.y,evb.x);',
+'     float eb=uStep.y*0.55;',
+'     for(int pass=0;pass<2;pass++){',
+'      for(int i=0;i<7;i++){',
+'       float fi=float(i);',
+'       float ph=-uTime*1.5+fi*0.8976;',
+'       float sn=sin(ph);float cs=cos(ph);',
+'       if((sn>=0.0)!=(pass==1))continue;',
+'       vec2 off=rot(vec2(cs*0.68,-1.05+sn*0.2+(mod(fi,3.0)-1.0)*0.045+0.012*sin(uTime*3.7+fi*1.9)),rlb);',
+'       float dep=0.5+0.5*sn;',
+'       float sc=(0.1+0.17*dep)*F;',
+'       vec2 pos=C+vec2(off.x/asp.x,off.y)*F;',
+'       vec2 dv=(q0-pos)*asp;',
+'       if(dot(dv,dv)>2.7*sc*sc)continue;',
+'       float dirn=(sn<0.0)?-1.0:1.0;',
+'       vec2 p=rot(vec2(dv.x,-dv.y)/sc,-rlb);p.x*=dirn;',
+'       float e=max(eb/sc,0.015);',
+'       float fl=sin(uTime*11.0+fi*2.3);',
+'       float sdb=(length((p-vec2(-0.08,0.0))/vec2(0.68,0.33))-1.0)*0.33;',
+'       float sdh=length(p-vec2(0.5,0.09))-0.31;',
+'       float sdt=sdSeg(p,vec2(-0.5,0.05),vec2(-1.05,0.11))-0.095;',
+'       float sdBody=smin(smin(sdb,sdh,0.12),sdt,0.1);',
+'       float wa=0.35+0.85*fl;vec2 wu=vec2(-cos(wa),sin(wa));',
+'       vec2 wp=p-vec2(0.08,0.14)-wu*0.42;vec2 wq=vec2(dot(wp,wu),dot(wp,vec2(-wu.y,wu.x)));',
+'       float sdW=(length(wq/vec2(0.52,0.2))-1.0)*0.2;',
+'       float sdK=(length((p-vec2(0.86,0.07))/vec2(0.15,0.075))-1.0)*0.075;',
+'       float bd=smoothstep(0.1,-0.34,p.y);',
+'       vec3 bc=mix(vec3(0.33,0.64,0.92),vec3(0.62,0.86,0.99),bd);',
+'       bc=mix(bc,vec3(0.2,0.46,0.78),smoothstep(-0.07,0.0,sdBody));',
+'       float cb=1.0-smoothstep(-e,e,sdBody);',
+'       vec3 oc=bc;float oa=cb;',
+'       float cw=1.0-smoothstep(-e,e,sdW);',
+'       vec3 wc=mix(vec3(0.5,0.78,0.97),vec3(0.3,0.58,0.88),smoothstep(-0.1,0.0,sdW));',
+'       oc=mix(oc,wc,cw);oa=max(oa,cw);',
+'       float ck=1.0-smoothstep(-e,e,sdK);oc=mix(oc,vec3(1.0,0.72,0.18),ck);oa=max(oa,ck);',
+'       float ce=1.0-smoothstep(-e,e,length(p-vec2(0.6,0.17))-0.055);oc=mix(oc,vec3(0.08,0.1,0.22),ce);',
+'       oc*=mix(0.86,1.0,dep);',
+'       col=mix(col,oc,oa*fal*mix(0.92,1.0,dep));',
+'      }',
+'     }',
+'    }',
+'   }',
 '   else if(f<22.5){vec2 ctr=vec2(C.x,C.y-0.3*F);vec2 b=abs((qn-ctr)*asp)/vec2(0.75*F,0.7*F);float m=max(b.x,b.y);float w=1.0-smoothstep(0.6,1.0,m);qn=ctr+(qn-ctr)*(1.0-0.4*w);}',
-'   else{qn=bulge(qn,EL,0.25*F,0.85);qn=bulge(qn,ER,0.25*F,0.85);}',
+'   else if(f<23.5){qn=bulge(qn,EL,0.25*F,0.85);qn=bulge(qn,ER,0.25*F,0.85);}',
+'   else{',
+'    vec2 emf=(EL+ER)*0.5;',
+'    qn=bulge(qn,EL+(EL-emf)*0.12,0.27*F,0.72);qn=bulge(qn,ER+(ER-emf)*0.12,0.27*F,0.72);',
+'    vec2 dm=qn-MO;vec2 dma=dm*asp;float wm=exp(-dma.x*dma.x/(0.1156*F*F)-dma.y*dma.y/(0.0144*F*F));',
+'    qn=vec2(MO.x+dm.x*(1.0-0.45*wm),MO.y+dm.y*(1.0+0.4*wm));',
+'   }',
 '   qa=mix(qa,qn,fal);',
 '  }',
-'  if(f<19.5||f>20.5)col=tex(qa);}',
+'  if(f<19.5||f>21.5)col=tex(qa);}',
 ' else{float sp=(uDbl>0.5)?uSplit:1.0;bool ins;float u;',
 ' if(uSide<0.5){ins=q.x<sp;u=q.x/sp;}else{ins=q.x>1.0-sp;u=(q.x-(1.0-sp))/sp;}',
 ' vec3 c;',
@@ -848,7 +908,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
    {n:'Mono',m:[1.0,0.98,0.92],a:[0.02,0.02,0.01],s:0}
   ];
   function mixN(a,b,t){return a+(b-a)*t}
-  var pxInt=1,pxSplit=0.25,pxSide=0,pxTint=0,pxPix=0.29,pxGrain=true,pxDbl=true,glI=1,glS=1,glG=0;
+  var pxInt=1,pxSplit=1,pxSide=1,pxTint=0,pxPix=0.29,pxGrain=true,pxDbl=true,glI=1,glS=1,glG=0;
   var DEFFX={cx:0.5,cy:0.5,s:1},EFX={cx:0.5,cy:0.5,s:1},sizeT=0.45,shape=0;
   var GFA=new Float32Array(16),GFB=new Float32Array(16),GFC=new Float32Array(16);
   function renderFx(id,ow,oh,fx,adj,vx,vy,cw,ch){
@@ -859,7 +919,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     var ad=adj||[0,1,1];gl.uniform3f(U.uAdj,ad[0],ad[1],ad[2]);gl.uniform1f(U.uFx,id);gl.uniform1f(U.uTime,performance.now()/1000%1000);gl.uniform1f(U.uAspect,at);
     gl.uniform2f(U.uCover,cx,cy);gl.uniform2f(U.uStep,1.5/ow,1.5/oh);
     gl.uniform2f(U.uC,0.5+(fx.cx-0.5)/cx,0.5+(fx.cy-0.5)/cy);
-    gl.uniform1f(U.uF,BASE_F*fx.s/cy);gl.uniform1f(U.uShape,shape);var tn=TINTS[pxTint];gl.uniform3f(U.uGl,glI,glS,glG);gl.uniform1f(U.uSplit,pxSplit);gl.uniform1f(U.uPix,2+14*pxPix);gl.uniform1f(U.uGrain,pxGrain?1:0);gl.uniform1f(U.uDbl,pxDbl?1:0);gl.uniform1f(U.uSide,pxSide);gl.uniform3f(U.uTM,mixN(1,tn.m[0],pxInt),mixN(1,tn.m[1],pxInt),mixN(1,tn.m[2],pxInt));gl.uniform3f(U.uTA,tn.a[0]*pxInt,tn.a[1]*pxInt,tn.a[2]*pxInt);gl.uniform1f(U.uTS,mixN(1,tn.s,pxInt));gl.uniform1f(U.uSz,fx.s/0.77);
+    gl.uniform1f(U.uF,BASE_F*fx.s/cy);gl.uniform1f(U.uShape,shape);var tn=TINTS[pxTint];gl.uniform3f(U.uGl,glI,glS,glG);gl.uniform1f(U.uSplit,fx===DEFFX?0.9992:Math.max(0.0008,Math.min(0.9992,pxSplit)));gl.uniform1f(U.uPix,2+14*pxPix);gl.uniform1f(U.uGrain,pxGrain?1:0);gl.uniform1f(U.uDbl,pxDbl?1:0);gl.uniform1f(U.uSide,fx===DEFFX?1:pxSide);gl.uniform3f(U.uTM,mixN(1,tn.m[0],pxInt),mixN(1,tn.m[1],pxInt),mixN(1,tn.m[2],pxInt));gl.uniform3f(U.uTA,tn.a[0]*pxInt,tn.a[1]*pxInt,tn.a[2]*pxInt);gl.uniform1f(U.uTS,mixN(1,tn.s,pxInt));gl.uniform1f(U.uSz,fx.s/0.77);
     var tq=function(p){return [0.5+(p[0]-0.5)/cx,0.5+(p[1]-0.5)/cy]};
     var fl=faceList(),nf=Math.min(4,fl.length);
     for(var k=0;k<4;k++){
@@ -880,7 +940,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   var DEF={el:[0.43,0.15],er:[0.58,0.14],no:[0.51,0.25],mo:[0.51,0.35],fc:[0.51,0.22],f:0.48};
   function cl(o){return {el:o.el.slice(),er:o.er.slice(),no:o.no.slice(),mo:o.mo.slice(),fc:o.fc.slice(),f:o.f}}
   var MAXF=4,TR=[],DT={p:cl(DEF),a:1},faState='idle',fa=null,detBusy=false;
-  var FACE_FX={17:1,18:1,19:1,20:1,21:1,22:1,23:1};
+  var FACE_FX={17:1,18:1,19:1,20:1,21:1,22:1,23:1,25:1};
   var det=document.createElement('canvas'),dctx=det.getContext('2d');
   function needFace(){return (state==='effects'&&page===0)||!!FACE_FX[effectId]}
   function b64buf(b){var s=atob(b),u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u.buffer}
@@ -1021,11 +1081,23 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   var fitDone=false,fitT=0,fitTarget=null,arAnim=false,arT=0,lastR=null;
   function applyFit(){
     fitT=0;var t=fitTarget;if(!t)return;fitTarget=null;
-    W=t.W;H=t.H;view.width=src.width=W;view.height=src.height=H;fitDone=true;
+    var nw=t.W+(t.W&1),nh=t.H+(t.H&1),ov=null;
+    /* effects such as Pixel and Comic Book look different at a different buffer size: keep the old picture on top and dissolve it away */
+    if(state!=='effects'&&fitDone&&effectId!==0&&view.width>2&&(Math.abs(nw-view.width)>6||Math.abs(nh-view.height)>6)){
+      try{ov=document.createElement('canvas');ov.width=view.width;ov.height=view.height;ov.getContext('2d').drawImage(view,0,0);
+        ov.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;pointer-events:none;z-index:1';vp.appendChild(ov)}catch(e){ov=null}
+    }
+    W=nw;H=nh;view.width=src.width=W;view.height=src.height=H;fitDone=true;
     try{paint()}catch(e){}
+    if(ov){
+      var rm=function(){try{ov.remove()}catch(e){}};
+      if(ov.animate){var an2=ov.animate([{opacity:1},{opacity:0}],{duration:arAnim?520:460,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});an2.onfinish=rm;setTimeout(rm,900)}else rm();
+    }
     if(state==='effects')sizeTiles();
   }
   function fit(now){
+    /* effects page is full-bleed but the picture keeps the shape of the viewer it came from, so tiles show exactly what the viewer shows */
+    if(state==='effects'&&settings.ar!=='dynamic'&&fitDone&&view.width>2)return;
     if(arAnim&&now!==true)return;   /* the box is animating: the buffer stays camera-shaped until it lands */
     var ab=app.getBoundingClientRect(),zz=app.clientWidth?ab.width/app.clientWidth:1,r={width:vp.clientWidth*zz,height:vp.clientHeight*zz};if(r.width<2||r.height<2)return;
     var dpr=Math.min(window.devicePixelRatio||1,2),w=r.width*dpr,h=r.height*dpr,k=Math.min(1,1280/Math.max(w,h));
@@ -1132,6 +1204,25 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     fxEl.appendChild(b);tiles.push(tl);
   })()}
   var dots=document.querySelectorAll('.pager .dot');
+  var pgAnims=[],pgGhost=null;
+  function slidePage(p,dir){
+    var np=(p+PAGES.length)%PAGES.length;
+    if(np===page||!fxEl.animate||state!=='effects'||fxBusy){showPage(p);return}
+    pgAnims.forEach(function(a){try{a.cancel()}catch(e){}});pgAnims=[];if(pgGhost){pgGhost.remove();pgGhost=null}
+    var g=document.createElement('div');g.className='fxghost';
+    tiles.forEach(function(t){
+      var d=document.createElement('div');d.className='tile';d.style.cursor='default';
+      var c=document.createElement('canvas');c.width=t.cv.width;c.height=t.cv.height;try{c.getContext('2d').drawImage(t.cv,0,0)}catch(e){}
+      var sp=document.createElement('span');sp.textContent=t.label.textContent;d.appendChild(c);d.appendChild(sp);g.appendChild(d);
+    });
+    fxEl.appendChild(g);pgGhost=g;
+    var W=fxEl.clientWidth,ease='cubic-bezier(.3,.1,.2,1)',dur=680;
+    showPage(p);primeTiles();
+    var all=[g.animate([{transform:'translateX(0)'},{transform:'translateX('+(-dir*W)+'px)'}],{duration:dur,easing:ease,fill:'forwards'})];
+    tiles.forEach(function(t){all.push(t.b.animate([{transform:'translateX('+(dir*W)+'px)'},{transform:'none'}],{duration:dur,easing:ease}))});
+    pgAnims=all;
+    all[0].onfinish=function(){if(pgGhost===g){g.remove();pgGhost=null}pgAnims=[]};
+  }
   function showPage(p){
     page=(p+PAGES.length)%PAGES.length;
     tiles.forEach(function(t,i){t.id=PAGES[page][i];t.label.textContent=NAMES[t.id];t.b.setAttribute('aria-label',NAMES[t.id])});
@@ -1140,12 +1231,15 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   }
   function sizeTiles(){
     var r=tiles[0].b.getBoundingClientRect();if(r.width<2||r.height<2)return;
-    var k=Math.min(1,360/r.width);TW=Math.max(2,Math.round(r.width*k));TH=Math.max(2,Math.round(r.height*k));
+    var k=Math.min((window.devicePixelRatio||1)>1.2?1.25:1,560/r.width);TW=Math.max(2,Math.round(r.width*k));TH=Math.max(2,Math.round(r.height*k));
     tiles.forEach(function(t){t.cv.width=TW;t.cv.height=TH;t.drawn=false});
   }
-  dots.forEach(function(d){d.addEventListener('click',function(){showPage(+d.dataset.p)})});
-  $('#pgPrev').addEventListener('click',function(){showPage(page-1)});
-  $('#pgNext').addEventListener('click',function(){showPage(page+1)});
+  var rsT=0;
+  function rsDo(){if(state!=='effects')return;if(fxBusy){rsT=setTimeout(rsDo,200);return}sizeTiles();primeTiles()}
+  if(window.ResizeObserver)new ResizeObserver(function(){clearTimeout(rsT);rsT=setTimeout(rsDo,100)}).observe(fxEl);
+  dots.forEach(function(d){d.addEventListener('click',function(){var np=+d.dataset.p;slidePage(np,np>page?1:-1)})});
+  $('#pgPrev').addEventListener('click',function(){slidePage(page-1,-1)});
+  $('#pgNext').addEventListener('click',function(){slidePage(page+1,1)});
   showPage(page);
 
   /* ---------- render loop ---------- */
@@ -1210,6 +1304,22 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     var c=composeQuad([view,view,view,view],pw,ph),g=qprev.getContext('2d');g.clearRect(0,0,pw,ph);g.drawImage(c,0,0);
   }
   var fcnt=0,warmQ=[];for(var wi=1;wi<=24;wi++)warmQ.push(wi);
+  function drawTiles(all){
+    var batch=[];
+    tiles.forEach(function(t,ti){
+      if(t.id===0){cover(t.c,src,W,H,TW,TH,false);}
+      else if(!all&&t.drawn&&((ti+fcnt)&1)){}
+      else batch.push(ti);
+      t.b.classList.toggle('sel',t.id===effectId&&effectId!==0);
+    });
+    if(batch.length){
+      var SW=TW*3,SH=TH*3;
+      batch.forEach(function(ti){renderFx(tiles[ti].id,TW,TH,DEFFX,null,(ti%3)*TW,SH-((ti/3|0)+1)*TH,SW,SH)});
+      batch.forEach(function(ti){var t=tiles[ti];t.c.drawImage(glc,(ti%3)*TW,(ti/3|0)*TH,TW,TH,0,0,TW,TH);t.drawn=true});
+    }
+  }
+  /* paint every tile right now (before an animation starts) so nothing pops in half-way through it */
+  function primeTiles(){try{if(gl){uploadSrc();drawTiles(true)}else tiles.forEach(function(t){cover(t.c,src,W,H,TW,TH,false)})}catch(e){}}
   function paint(){
     if(source==='camera'&&video&&video.readyState>=2&&video.videoWidth){if(performance.now()-crop.at>(state==='effects'?60000:5000))updateCrop();var zr=zrect(crop.w?crop.x:0,crop.w?crop.y:0,crop.w||video.videoWidth,crop.h||video.videoHeight);cover(sctx,video,video.videoWidth,video.videoHeight,W,H,settings.mirror,zr[0],zr[1],zr[2],zr[3])}
     else if(source==='image'&&img){var zi=zrect(0,0,img.naturalWidth,img.naturalHeight);cover(sctx,img,img.naturalWidth,img.naturalHeight,W,H,false,zi[0],zi[1],zi[2],zi[3])}
@@ -1222,18 +1332,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
         fcnt++;
         /* every tile that needs a new picture this frame is drawn into one shared sheet, then copied out together:
            one GPU hand-off per frame instead of one per tile (that stall is what made this page stutter) */
-        var batch=[];
-        tiles.forEach(function(t,ti){
-          if(t.id===0){cover(t.c,src,W,H,TW,TH,false);}
-          else if(t.drawn&&((ti+fcnt)&1)){}
-          else batch.push(ti);
-          t.b.classList.toggle('sel',t.id===effectId&&effectId!==0);
-        });
-        if(batch.length){
-          var SW=TW*3,SH=TH*3;
-          batch.forEach(function(ti){renderFx(tiles[ti].id,TW,TH,DEFFX,null,(ti%3)*TW,SH-((ti/3|0)+1)*TH,SW,SH)});
-          batch.forEach(function(ti){var t=tiles[ti];t.c.drawImage(glc,(ti%3)*TW,(ti/3|0)*TH,TW,TH,0,0,TW,TH);t.drawn=true});
-        }
+        drawTiles(false);
       }else tiles.forEach(function(t){cover(t.c,src,W,H,TW,TH,false)});
     }else if((effectId||adjOn())&&gl){
       uploadSrc();renderFx(effectId,W,H,EFX,adjVals());vctx.drawImage(glc,0,0,W,H);
@@ -1251,7 +1350,80 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   fit();requestAnimationFrame(frame);
 
   /* ---------- state ---------- */
+  var fxBusy=false,lastVR=null;
+  function zoomOf(){return app.clientWidth?app.getBoundingClientRect().width/app.clientWidth:1}
+  function mapTo(el,r){var z=zoomOf(),b=el.getBoundingClientRect();return 'translate('+((r.left-b.left)/z)+'px,'+((r.top-b.top)/z)+'px) scale('+(r.width/Math.max(1,b.width))+','+(r.height/Math.max(1,b.height))+')'}
+  /* The picture that flies between the viewer and a tile is a copy of the full camera frame, cover-fitted into the viewer rect at
+     one end and into the tile rect at the other (same scale for both axes, clipped), so what you see never changes zoom on the way
+     or when it lands, whatever the aspect ratio. */
+  /* where the live viewer sits (or will sit) RIGHT NOW, worked out from the current window - never a remembered rectangle,
+     so resizing the window while the effects page is open can't leave the animation using the old size */
+  function bandRect(){
+    var a=settings.ar,r={'16:9':16/9,'4:3':4/3,'1:1':1}[a]||0,ab=app.getBoundingClientRect(),zz=app.clientWidth?ab.width/app.clientWidth:1;
+    if(!r)return {left:ab.left,top:ab.top,width:ab.width,height:ab.height};
+    var hs=items.length>0,aw=app.clientWidth,ah=app.clientHeight-parseFloat(app.style.getPropertyValue('--bh')||80)-(hs?parseFloat(app.style.getPropertyValue('--sh')||76):0),w=aw,h=w/r;
+    if(h>ah){h=ah;w=h*r}
+    return {left:ab.left+(aw-w)/2*zz,top:ab.top+(ah-h)/2*zz,width:w*zz,height:h*zz};
+  }
+  function fxTile(id){var t=null;if(id!==0)tiles.forEach(function(x){if(!t&&x.id===id)t=x});return t||tiles[4]}
+  function makeHero(vr,tr,draw,par){
+    var z=zoomOf(),fb=(par||fxEl).getBoundingClientRect(),a=Math.max(.1,view.width/Math.max(1,view.height));
+    var cw0=Math.max(vr.width,vr.height*a),ch0=cw0/a,cw1=Math.max(tr.width,tr.height*a),ch1=cw1/a,k=cw1/cw0;
+    var cx0=vr.left+vr.width/2,cy0=vr.top+vr.height/2,cx1=tr.left+tr.width/2,cy1=tr.top+tr.height/2;
+    var c=document.createElement('canvas');c.width=view.width;c.height=view.height;
+    try{draw(c.getContext('2d'),c)}catch(e){}
+    c.style.cssText='position:absolute;display:block;pointer-events:none;z-index:5;background:#000;will-change:transform,clip-path;'
+      +'left:'+((cx0-cw0/2-fb.left)/z)+'px;top:'+((cy0-ch0/2-fb.top)/z)+'px;width:'+(cw0/z)+'px;height:'+(ch0/z)+'px';
+    (par||fxEl).appendChild(c);
+    return {c:c,
+      big:{transform:'none',clipPath:'inset('+Math.max(0,(ch0-vr.height)/2/z)+'px '+Math.max(0,(cw0-vr.width)/2/z)+'px)'},
+      small:{transform:'translate('+((cx1-cx0)/z)+'px,'+((cy1-cy0)/z)+'px) scale('+k+')',clipPath:'inset('+Math.max(0,(ch1-tr.height)/2/(k*z))+'px '+Math.max(0,(cw1-tr.width)/2/(k*z))+'px)'}};
+  }
+  function fxIn(){
+    if(!fxEl.animate||!lastVR||lastVR.width<4)return;
+    fxBusy=true;fxEl.classList.add('entering');
+    var dur=400,an=[];
+    /* camera picture: zooms in + fades out.  effects page: zooms in (from a little smaller) + fades in */
+    var h=makeHero(lastVR,lastVR,function(g){g.drawImage(view,0,0)},vp);
+    h.c.style.zIndex=4;h.c.style.transformOrigin='50% 50%';h.c.style.clipPath=h.big.clipPath;
+    an.push(h.c.animate([{transform:'none',opacity:1},{transform:'scale(1.15)',opacity:0,offset:.7},{transform:'scale(1.15)',opacity:0}],{duration:dur,easing:'cubic-bezier(.35,.05,.5,1)',fill:'forwards'}));
+    an.push(fxEl.animate([{transform:'scale(.93)',opacity:0},{transform:'scale(.93)',opacity:0,offset:.18},{transform:'none',opacity:1}],{duration:dur,easing:'cubic-bezier(.2,.7,.3,1)'}));
+    var end=false,fin=function(){if(end)return;end=true;try{h.c.remove()}catch(e){}fxBusy=false;fxEl.classList.remove('entering')};
+    an[0].onfinish=fin;an[0].oncancel=fin;setTimeout(fin,dur+300);
+  }
+  function fxOut(id,apply,done){
+    if(state!=='effects'){if(apply)apply();done();return}
+    if(fxBusy)return;
+    var vr=bandRect();
+    if(!fxEl.animate||!vr||vr.width<4){if(apply)apply();done();return}
+    if(apply)apply();
+    fxBusy=true;fxEl.classList.add('leaving');
+    /* what the live viewer will show the instant the grid goes away: the chosen effect on the full frame */
+    var draw=function(g,c){
+      var ok=false;
+      if(gl&&(id||adjOn())){try{uploadSrc();renderFx(id,W,H,EFX,adjVals());g.drawImage(glc,0,0,c.width,c.height);ok=true}catch(e){}}
+      if(!ok)g.drawImage(src,0,0,c.width,c.height);
+    };
+    /* effects page: zooms out + fades out.  new camera picture: zooms out (from a little bigger) + fades in */
+    var h=makeHero(vr,vr,draw,vp);
+    h.c.style.zIndex=4;h.c.style.transformOrigin='50% 50%';h.c.style.clipPath=h.big.clipPath;
+    var dur=400,an=[];
+    an.push(h.c.animate([{transform:'scale(1.15)',opacity:0},{transform:'scale(1.15)',opacity:0,offset:.3},{transform:'none',opacity:1}],{duration:dur,easing:'cubic-bezier(.2,.7,.3,1)',fill:'both'}));
+    an.push(fxEl.animate([{transform:'none',opacity:1},{transform:'scale(.93)',opacity:0,offset:.7},{transform:'scale(.93)',opacity:0}],{duration:dur,easing:'cubic-bezier(.35,.05,.5,1)',fill:'forwards'}));
+    var end=false,fin=function(){
+      if(end)return;end=true;
+      try{view.getContext('2d').drawImage(h.c,0,0,view.width,view.height)}catch(e){}   /* viewer already shows the new picture */
+      done();
+      try{h.c.remove()}catch(e){}
+      an.forEach(function(a){try{a.cancel()}catch(e){}});
+      fxEl.classList.remove('leaving');fxBusy=false;
+    };
+    an[0].onfinish=fin;setTimeout(fin,dur+600);
+  }
   function setState(s){
+    var prevS=state;
+    if(s==='effects'&&prevS!=='effects'){try{lastVR=view.getBoundingClientRect()}catch(e){lastVR=null}}
+    if(prevS==='effects'&&s!=='effects'&&pgGhost){pgAnims.forEach(function(a){try{a.cancel()}catch(e){}});pgAnims=[];pgGhost.remove();pgGhost=null}
     state=s;app.dataset.state=s;
     document.querySelectorAll('[data-for]').forEach(function(e){e.hidden=e.dataset.for.split(' ').indexOf(s)<0});
     $('#count').hidden=s!=='count';$('#manual').hidden=s!=='manual';
@@ -1259,8 +1431,13 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     pv.hidden=s!=='preview';
     if(s!=='preview'){killQuad();pv.innerHTML='';if(typeof vslot!=='undefined')vslot.innerHTML='';selMode=false;items.forEach(function(x){x.sel=false})}
     if(s!=='idle')closeSettings();
-    if(s==='effects')sizeTiles();
+    if(s==='effects'){
+      if(prevS!=='effects'&&effectId!==0){for(var pi=0;pi<PAGES.length;pi++){if(PAGES[pi].indexOf(effectId)>=0){if(pi!==page)showPage(pi);break}}}
+    }
     layoutAR();updatePanel();updateViewer();if(typeof updateGrid==='function'&&gridOv)updateGrid();
+    /* size + paint the tiles only AFTER the effects layout is in place, otherwise they are drawn for the old (letterboxed) box and pop to a different crop a moment later */
+    if(s==='effects'){sizeTiles();if(prevS!=='effects')primeTiles()}
+    if(s==='effects'&&prevS!=='effects')fxIn();
   }
   setState('idle');
   var mic=null;
@@ -1377,7 +1554,45 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     return o;
   }
   var seq=0;
-  function addItem(it){it.n=++seq;it.date=new Date();it.sel=false;items.push(it);renderStrip(true)}
+  /* camera roll is kept on this device (IndexedDB) so it survives closing and reopening the app */
+  var rollDB=null;
+  function rollOpen(cb){
+    var done=false,fin=function(){if(!done){done=true;cb()}};
+    try{
+      var r=indexedDB.open('photobooth',1);
+      r.onupgradeneeded=function(){try{r.result.createObjectStore('items',{keyPath:'id'})}catch(e){}};
+      r.onsuccess=function(){rollDB=r.result;fin()};
+      r.onerror=r.onblocked=fin;
+      setTimeout(fin,4000);
+    }catch(e){fin()}
+  }
+  function rollPut(it){
+    if(!rollDB)return;
+    try{
+      var rec={id:it.id,type:it.type,thumb:it.thumb,full:it.full,dur:it.dur||0,n:it.n,t:it.date.getTime()};
+      if(it.type==='video'){if(!it.blob)return;rec.blob=it.blob}
+      var tx=rollDB.transaction('items','readwrite');tx.objectStore('items').put(rec);
+    }catch(e){}
+  }
+  function rollDel(it){if(!rollDB||!it.id)return;try{rollDB.transaction('items','readwrite').objectStore('items').delete(it.id)}catch(e){}}
+  function rollLoad(){
+    if(!rollDB)return;
+    try{
+      var rq=rollDB.transaction('items','readonly').objectStore('items').getAll();
+      rq.onsuccess=function(){
+        var got=(rq.result||[]).sort(function(a,b){return a.n-b.n}),add=[];
+        got.forEach(function(r){
+          var it={id:r.id,type:r.type,thumb:r.thumb,full:r.full,dur:r.dur,n:r.n,date:new Date(r.t),sel:false};
+          if(r.type==='video'){if(!r.blob)return;it.blob=r.blob;try{it.url=URL.createObjectURL(r.blob)}catch(e){return}}
+          add.push(it);if(r.n>seq)seq=r.n;
+        });
+        if(add.length){items=add.concat(items);renderStrip(false)}
+      };
+    }catch(e){}
+  }
+  function addItem(it){it.id=Date.now().toString(36)+Math.random().toString(36).slice(2,7);it.n=++seq;it.date=new Date();it.sel=false;items.push(it);renderStrip(true);rollPut(it)}
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  rollOpen(rollLoad);
   var TICK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var sbar=$('#sbar'),sbi=sbar.querySelector('i'),sbDrag=false;
   function updateSbar(){
@@ -1490,7 +1705,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     try{
       var st=view.captureStream(30);
       if(mic&&mic!=='pending')mic.getAudioTracks().forEach(function(t){st.addTrack(t)});
-      var mt=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm;codecs=vp9','video/webm','video/mp4'].filter(function(t){return window.MediaRecorder&&MediaRecorder.isTypeSupported(t)})[0];
+      var mt=[mp4Type(),'video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm;codecs=vp9','video/webm','video/mp4'].filter(function(t){return t}).filter(function(t){return window.MediaRecorder&&MediaRecorder.isTypeSupported(t)})[0];
       rec=new MediaRecorder(st,mt?{mimeType:mt}:undefined);
       rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
       rec.start(250);
@@ -1633,7 +1848,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   $('#trash').addEventListener('click',function(){
     var t=targets();if(!t.length){if(selMode)toast('Select photos first');return}
     var keep=items[cur],at=cur;
-    t.forEach(function(it){if(it.url){try{URL.revokeObjectURL(it.url)}catch(e){}}});
+    t.forEach(function(it){rollDel(it);if(it.url){try{URL.revokeObjectURL(it.url)}catch(e){}}});
     items=items.filter(function(x){return t.indexOf(x)<0});
     toast(t.length>1?t.length+' items deleted':'Deleted');
     if(!items.length){cur=-1;renderStrip();setState('idle');return}
@@ -1681,27 +1896,65 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     try{if(window.claude&&window.claude.use)dlCap=await window.claude.use('downloads')}catch(e){dlCap=null}
     return dlCap;
   }
+  /* movies are saved as MP4: recorded as MP4 where the browser can, otherwise (older clips) re-encoded when you download them */
+  function mp4Type(){
+    if(!window.MediaRecorder)return '';
+    var L=['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4;codecs=avc1','video/mp4'];
+    for(var i=0;i<L.length;i++){try{if(MediaRecorder.isTypeSupported(L[i]))return L[i]}catch(e){}}
+    return '';
+  }
+  async function toMp4(blob){
+    if(/mp4/.test(blob.type||''))return blob;
+    var mt=mp4Type();if(!mt)return null;
+    var url=URL.createObjectURL(blob),v=document.createElement('video'),ac2=null;
+    v.playsInline=true;v.preload='auto';v.src=url;
+    try{
+      await new Promise(function(ok,no){v.onloadedmetadata=ok;v.onerror=no;setTimeout(no,8000)});
+      if(!isFinite(v.duration)){
+        await new Promise(function(ok){v.ontimeupdate=function(){v.ontimeupdate=null;ok()};v.currentTime=1e7;setTimeout(ok,3000)});
+        v.currentTime=0;await new Promise(function(ok){v.onseeked=ok;setTimeout(ok,1500)});
+      }
+      var cs=v.captureStream?v.captureStream():(v.mozCaptureStream?v.mozCaptureStream():null);
+      if(!cs)return null;
+      var tracks=cs.getVideoTracks().slice();
+      ac2=audio();
+      if(ac2&&ac2.createMediaElementSource){try{ac2.resume();var ms=ac2.createMediaElementSource(v),dest=ac2.createMediaStreamDestination();ms.connect(dest);dest.stream.getAudioTracks().forEach(function(t){tracks.push(t)})}catch(e){}}
+      var out=[],mr=new MediaRecorder(new MediaStream(tracks),{mimeType:mt});
+      mr.ondataavailable=function(e){if(e.data&&e.data.size)out.push(e.data)};
+      var done=new Promise(function(ok){mr.onstop=ok});
+      var lim=(isFinite(v.duration)?v.duration:600)*1000+6000;
+      v.onended=function(){try{mr.stop()}catch(e){}};
+      mr.start(500);
+      try{await v.play()}catch(e){v.muted=true;await v.play()}
+      var tm=setTimeout(function(){try{mr.stop()}catch(e){}},lim);
+      await done;clearTimeout(tm);
+      return out.length?new Blob(out,{type:mr.mimeType||mt}):null;
+    }catch(e){return null}
+    finally{try{v.pause()}catch(e){}URL.revokeObjectURL(url)}
+  }
+  async function fileOfMp4(it){
+    var f=fileOf(it);
+    if(it.type==='video'&&it.blob&&!/mp4/.test(it.blob.type||'')){
+      toast('Converting movie to MP4…');
+      var m=await toMp4(it.blob);
+      if(m)return {name:baseOf(it)+'.mp4',blob:m,date:it.date};
+    }
+    return f;
+  }
+  var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
   async function download(){
     if(dlBusy)return;var t=targets();if(!t.length){if(selMode)toast('Select photos first');return}
     dlBusy=true;
     try{
-      var dl=await getDl();
-      var fs=t.map(fileOf);
+      var dl=await getDl(),fs=[];
+      for(var q=0;q<t.length;q++)fs.push(await fileOfMp4(t[q]));
       if(!dl){
-        if(fs.length===1){anchorSave(fs[0].name,fs[0].blob);toast('Downloading '+fs[0].name);return}
-        var ar=[];for(var q=0;q<fs.length;q++)ar.push({name:fs[q].name,date:fs[q].date,data:new Uint8Array(await fs[q].blob.arrayBuffer())});
-        anchorSave('Photobooth_'+stamp(new Date())+'.zip',makeZip(ar));toast('Downloading '+fs.length+' files as a ZIP');return;
+        /* one file per item, never a ZIP */
+        for(var i=0;i<fs.length;i++){anchorSave(fs[i].name,fs[i].blob);if(i<fs.length-1)await sleep(450)}
+        toast(fs.length===1?'Downloading '+fs[0].name:'Downloading '+fs.length+' files');return;
       }
-      if(fs.length===1){await dl.save({filename:fs[0].name,data:fs[0].blob});toast('Saved '+fs[0].name);return}
-      var arr=[];
-      for(var i=0;i<fs.length;i++)arr.push({name:fs[i].name,date:fs[i].date,data:new Uint8Array(await fs[i].blob.arrayBuffer())});
-      try{await dl.save({filename:'Photobooth_'+stamp(new Date())+'.zip',data:makeZip(arr)});toast('Saved '+fs.length+' files')}
-      catch(e){
-        if(e&&(e.code==='extension_not_enabled'||e.code==='rejected_extension')){
-          for(var j=0;j<fs.length;j++)await dl.save({filename:fs[j].name,data:fs[j].blob});
-          toast('Saved '+fs.length+' files');
-        }else throw e;
-      }
+      for(var j=0;j<fs.length;j++)await dl.save({filename:fs[j].name,data:fs[j].blob});
+      toast(fs.length===1?'Saved '+fs[0].name:'Saved '+fs.length+' files');
     }catch(e){
       var c=e&&e.code;if(c==='declined')return;
       toast(c==='rate_limited'?'Another save is waiting for your answer.':'Couldn’t save the file.');
@@ -1961,7 +2214,7 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     if(!panel)return;
     var live=(state==='idle'||state==='rec'||state==='count'||state==='manual')&&source!=='none';
     var on=!!GEO[effectId]&&live;
-    panel.hidden=!on;view.style.cursor=on?(dragging?'grabbing':'grab'):'default';
+    panel.hidden=!on;view.style.cursor=on?(dragging?'grabbing':'grab'):(effectId===24&&live?'ew-resize':'default');
     var sh=(effectId===20||effectId===24||effectId===14)&&live;
     if(!sh)pickOpen=false;
     shapeBtn.hidden=!sh;shapePick.hidden=!(sh&&pickOpen&&effectId===20);pxMenu.hidden=!(sh&&pickOpen&&effectId===24);glMenu.hidden=!(sh&&pickOpen&&effectId===14);
@@ -1969,7 +2222,10 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
     shapeBtn.title=effectId===24?'Change filter':effectId===14?'Glow options':'Change style';shapeBtn.setAttribute('aria-label',shapeBtn.title);
     pxHandle.hidden=!(effectId===24&&live);shapeBtn.setAttribute('aria-expanded',String(sh&&pickOpen));
   }
-  function selectEffect(id){effectId=id;EFX.cx=0.5;EFX.cy=0.5;setSize(0.45);setState('idle')}
+  function selectEffect(id){fxOut(id,function(){effectId=id;EFX.cx=0.5;EFX.cy=0.5;setSize(0.45);if(id===24){pxSide=1;pxSplit=1}},function(){setState('idle');if(id===24)pxStart()})}
+  function leaveFx(){
+    if(effectId!==0&&!tiles.some(function(t){return t.id===effectId})){for(var pi=0;pi<PAGES.length;pi++){if(PAGES[pi].indexOf(effectId)>=0){showPage(pi);primeTiles();break}}}
+    fxOut(effectId,null,function(){setState('idle')})}
   function sliderTo(e){var r=slider.getBoundingClientRect();setSize((e.clientX-r.left)/r.width)}
   var sdrag=false;
   slider.addEventListener('pointerdown',function(e){sdrag=true;try{slider.setPointerCapture(e.pointerId)}catch(_){}sliderTo(e);e.preventDefault()});
@@ -2006,27 +2262,62 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   function setTint(n){pxTint=n;[].forEach.call(tintPick.children,function(b,i){b.setAttribute('aria-checked',String(i===n));b.classList.toggle('on',i===n)})}
   setTint(0);
   [['glir','gliv',function(v){glI=v/100}],['glsr','glsv',function(v){glS=v/100}],['glgr','glgv',function(v){glG=v/100}]].forEach(function(x){var r=$('#'+x[0]),l=$('#'+x[1]);r.addEventListener('input',function(){x[2](+r.value);l.textContent=r.value+'%'})});
-  var pxDS=$('#pxdsw'),pxGS=$('#pxgsw');
-  pxDS.addEventListener('click',function(){pxDbl=!pxDbl;pxDS.setAttribute('aria-checked',String(pxDbl))});
+  var pxGS=$('#pxgsw');
   pxGS.addEventListener('click',function(){pxGrain=!pxGrain;pxGS.setAttribute('aria-checked',String(pxGrain))});
   var pxIR=$('#pxir'),pxIV=$('#pxiv');pxIR.addEventListener('input',function(){pxInt=+pxIR.value/100;pxIV.textContent=pxIR.value+'%'});
   var pxR=$('#pxr'),pxV=$('#pxv');
   pxR.addEventListener('input',function(){pxPix=+pxR.value/100;pxV.textContent=pxR.value+'%'});
   document.addEventListener('pointerdown',function(e){if(pickOpen&&(effectId===24||effectId===14)&&!pxMenu.contains(e.target)&&!glMenu.contains(e.target)&&!shapeBtn.contains(e.target)){pickOpen=false;updatePanel()}});
-  var pxDown=null,pxDrag=false,pxKey='';
-  function pxLive(){return effectId===24&&pxDbl&&(state==='idle'||state==='rec'||state==='count'||state==='manual')&&source!=='none'}
+  var pxDown=null,pxDrag=false;
+  function pxLive(){return effectId===24&&(state==='idle'||state==='rec'||state==='count'||state==='manual')&&source!=='none'}
   function pxEdge(){return pxSide===0?pxSplit:1-pxSplit}
+  function pxSetEdge(b){b=Math.max(0,Math.min(1,b));if(b<0.04)b=0;else if(b>0.96)b=1;pxSplit=pxSide===0?b:1-b}
+  /* quick tip: shown every time Pixel is opened */
+  var tipEl=$('#pxtip'),tipH=tipEl.querySelector('.hand'),tipO=tipEl.querySelector('.ho'),tipF=tipEl.querySelector('.hf'),tipS=tipEl.querySelector('.scrim'),tipRAF=0,tipOn=false;
+  function tz(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)))}
+  function tez(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+  function tipFit(){
+    var vr=view.getBoundingClientRect(),ar=(tipEl.offsetParent||app).getBoundingClientRect(),z=zoomOf(),st=tipEl.style;
+    st.left=((vr.left-ar.left)/z)+'px';st.top=((vr.top-ar.top)/z)+'px';st.width=(vr.width/z)+'px';st.height=(vr.height/z)+'px';st.right='auto';st.bottom='auto';
+  }
+  function stopTip(){if(!tipOn)return;tipOn=false;cancelAnimationFrame(tipRAF);tipEl.hidden=true;pxSide=1;pxSplit=1}
+  function pxStart(){
+    stopTip();pxSide=1;pxSplit=1;tipOn=true;tipFit();tipEl.hidden=false;
+    tipS.style.opacity=0;tipO.style.opacity=0;tipF.style.opacity=0;
+    var t0=performance.now();
+    (function step(now){
+      if(!tipOn)return;
+      if(effectId!==24||state!=='idle'){stopTip();return}
+      var t=now-t0;
+      if(t>3900){stopTip();return}
+      var fade=tz(t,3500,3850),sc=tz(t,0,300)-fade,ho=tz(t,250,550)-fade,gr=tz(t,750,930)-tz(t,3150,3330);
+      var p=tez(tz(t,950,1800))-tez(tz(t,2300,3150));
+      tipFit();
+      pxSide=1;pxSplit=Math.max(0,Math.min(1,1-p));
+      tipS.style.opacity=sc;
+      tipH.style.left=(16+68*p)+'%';
+      tipH.style.transform='translate(-50%,-50%) scale('+((0.88+0.12*tz(t,250,550))*(1-0.07*gr))+')';
+      tipO.style.opacity=ho*(1-gr);tipF.style.opacity=ho*gr;
+      tipRAF=requestAnimationFrame(step);
+    })(t0);
+  }
   view.addEventListener('pointerdown',function(e){
+    if(tipOn&&effectId===24)stopTip();
     if(!pxLive())return;
-    var r=view.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;
-    pxDown={x:e.clientX,y:e.clientY,t:performance.now(),s0:pxSplit};
+    pxDown={x:e.clientX,y:e.clientY,t:performance.now(),b0:pxEdge()};
     try{view.setPointerCapture(e.pointerId)}catch(_){}
     e.preventDefault();
   });
   view.addEventListener('pointermove',function(e){
     if(!pxDown)return;var r=view.getBoundingClientRect(),dx=e.clientX-pxDown.x;
-    if(!pxDrag&&Math.abs(dx)>8)pxDrag=true;
-    if(pxDrag)pxSplit=Math.max(0.08,Math.min(0.75,pxDown.s0+(pxSide===0?dx:-dx)/r.width));
+    if(!pxDrag&&Math.abs(dx)>8){
+      pxDrag=true;
+      var b=pxEdge();
+      /* at an end the divider can only come in from that edge: swap which side is pixelated so either direction works */
+      if(b===0&&dx<0){pxSide=1-pxSide;b=1}else if(b===1&&dx>0){pxSide=1-pxSide;b=0}
+      pxDown.b0=b;pxDown.x=e.clientX;dx=0;
+    }
+    if(pxDrag)pxSetEdge(pxDown.b0+dx/Math.max(1,r.width));
   });
   ['pointerup','pointercancel'].forEach(function(n){view.addEventListener(n,function(e){
     if(pxDown&&!pxDrag&&n==='pointerup'&&pxLive()&&Math.hypot(e.clientX-pxDown.x,e.clientY-pxDown.y)<10&&performance.now()-pxDown.t<500){pxSide=pxSide?0:1}
@@ -2041,8 +2332,8 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   /* ---------- wiring ---------- */
   $('#shutter').addEventListener('click',shutter);
   $('#stop').addEventListener('click',stopRec);
-  $('#fxbtn').addEventListener('click',function(){if(state==='effects')setState('idle');else if(!busy)setState('effects')});
-  $('#done').addEventListener('click',function(){setState('idle')});
+  $('#fxbtn').addEventListener('click',function(){if(state==='effects')leaveFx();else if(!busy)setState('effects')});
+  $('#done').addEventListener('click',function(){leaveFx()});
   $('#count').addEventListener('click',function(){token++;busy=false;setState('idle')});
   function pvKeys(e){
     if(state!=='preview'||!aboutEl.hidden||!setPop.hidden||e.ctrlKey||e.metaKey||e.altKey)return false;
@@ -2064,9 +2355,9 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   document.addEventListener('keydown',function(e){
     if(pvKeys(e))return;
     if(e.key==='Escape'&&!setPop.hidden){closeSettings()}
-    else if(e.key==='Escape'){if(state==='manual'){if(manualRes){var mr=manualRes;manualRes=null;mr(false)}}else if(state==='count'){token++;busy=false;setState('idle')}else if(state==='preview'||state==='effects')setState('idle')}
-    else if(e.key==='ArrowLeft'&&state==='effects')showPage(page-1);
-    else if(e.key==='ArrowRight'&&state==='effects')showPage(page+1);
+    else if(e.key==='Escape'){if(state==='manual'){if(manualRes){var mr=manualRes;manualRes=null;mr(false)}}else if(state==='count'){token++;busy=false;setState('idle')}else if(state==='effects')leaveFx();else if(state==='preview')setState('idle')}
+    else if(e.key==='ArrowLeft'&&state==='effects')slidePage(page-1,-1);
+    else if(e.key==='ArrowRight'&&state==='effects')slidePage(page+1,1);
     else if(e.key==='ArrowLeft'&&state==='preview'&&!(document.activeElement&&document.activeElement.tagName==='VIDEO'))go(-1);
     else if(e.key==='ArrowRight'&&state==='preview'&&!(document.activeElement&&document.activeElement.tagName==='VIDEO'))go(1);
     else if(e.key===' '&&state==='preview'&&pv.querySelector('video')&&!(document.activeElement&&/^(BUTTON|INPUT)$/.test(document.activeElement.tagName))){e.preventDefault();var pvv=pv.querySelector('video');if(pvv.paused)pvv.play();else pvv.pause()}
